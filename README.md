@@ -4,6 +4,10 @@ ofxKinectV2
 An addon for the new Kinect For Windows V2 sensor. 
 Based on the excellent work by the https://github.com/OpenKinect/libfreenect2 team ( @JoshBlake @floe and @christiankerl plus others ) 
 
+New: 
+- Now supports both the early beta device and the new retail device. 
+
+
 Notes:
 - Build in Release for much faster performance ( 15fps capture rate in Release vs 5fps in Debug )!!
 - Currently only supports one Kinect V2 at a time. 
