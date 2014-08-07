@@ -720,7 +720,7 @@ int ofProtonect::openKinect(std::string binpath){
   cmd_seq = 0;
 
   uint16_t vid = 0x045E;
-  uint16_t pid = 0x02C4;
+  uint16_t pid[2] = {0x02d8, 0x02C4};
   uint16_t mi = 0x00;
 
   bool debug_mode = false;
@@ -738,27 +738,33 @@ int ofProtonect::openKinect(std::string binpath){
 
   libusb_set_debug(NULL, debug_mode ? LIBUSB_LOG_LEVEL_DEBUG : LIBUSB_LOG_LEVEL_INFO);
 
-  printf("Opening device %04X:%04X...\n", vid, pid);
+  for(int i = 0; i < 2; i++){
+      printf("Trying to open device %04X:%04X...\n", vid, pid[i]);
 
   handle = NULL;
   int tryCount = 4;
   if (handle == NULL){
     while(tryCount > 0 && handle == NULL){
-        handle = libusb_open_device_with_vid_pid(NULL, vid, pid);
+                handle = libusb_open_device_with_vid_pid(NULL, vid, pid[i]);
         tryCount--;
         ofSleepMillis(100);
         
         if( handle ){
           libusb_reset_device(handle);
           ofSleepMillis(100);
-          handle = libusb_open_device_with_vid_pid(NULL, vid, pid);
-        }
-    }
+                  handle = libusb_open_device_with_vid_pid(NULL, vid, pid[i]);
+                }
+            }
+      }
+      if(handle !=  NULL){
+        break;
+      }
+  }
+  
     if( handle == NULL ){
         perr("ofProtonect::openKinect  Failed. - handle is NULL\n");
         return -1;
     }
-  }
 
   dev = libusb_get_device(handle);
   bus = libusb_get_bus_number(dev);
