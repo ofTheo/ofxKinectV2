@@ -11,7 +11,7 @@ New:
 Notes:
 - Build in Release for much faster performance ( 15fps capture rate in Release vs 5fps in Debug )!!
 - Currently only supports one Kinect V2 at a time. 
-- Kinect needs to have flashed firmware ( this currently needs to be done on Windows 8 ) 
+- Kinect may need to have flashed firmware ( this currently needs to be done on Windows 8 ) 
 - Requires USB 3 port on machine. 
 - Only tested on OS X though Win / Nix should be possible too with patched libusb ( see: https://github.com/OpenKinect/libfreenect2/blob/master/depends/README.depends.txt ) 
 - If you have the ofxKinect ( v1 ) addon in your project remove the ofxKinect libusb lib and use the one that comes with this repo instead. 
