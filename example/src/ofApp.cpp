@@ -2,16 +2,10 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    if( !ofFile::doesFileExist("11to16.bin") ){
-        ofSystemAlertDialog("Make sure you have 11to16.bin, xTable.bin and zTable.bin in your data folder!");
-        ofExit(); 
-    }
-
     ofBackground(30, 30, 30);
 
-    panel.setup("distance in mm", "settings.xml", 540, 100);
-    panel.add(kinect.minDistance);
-    panel.add(kinect.maxDistance);
+    panel.setup("", "settings.xml", 540, 100);
+    panel.add(kinect.params);
     panel.loadFromFile("settings.xml");
 
     kinect.open();

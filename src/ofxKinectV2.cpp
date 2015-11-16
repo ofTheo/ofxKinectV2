@@ -16,8 +16,10 @@ ofxKinectV2::ofxKinectV2(){
     lastFrameNo = -1;
     
     //set default distance range to 50cm - 600cm
-    minDistance.set("minDistance", 500, 0, 12000);
-    maxDistance.set("maxDistance", 6000, 0, 12000);
+    
+    params.setName("kinect v2 params");
+    params.add(minDistance.set("minDistance", 500, 0, 12000));
+    params.add(maxDistance.set("maxDistance", 6000, 0, 12000));
 }
 
 //--------------------------------------------------------------------------------
@@ -33,10 +35,11 @@ bool ofxKinectV2::open(){
     bNewBuffer = false;
     bOpened    = false;
     
-    int retVal = protonect.openKinect(ofToDataPath(""));
+    int retVal = protonect.openKinect(ofToDataPath("") + "/");
+    
     if(retVal==0){
         lastFrameNo = -1;
-        startThread();
+        startThread(true);
     }else{
         return false;
     }
@@ -47,16 +50,15 @@ bool ofxKinectV2::open(){
 
 //--------------------------------------------------------------------------------
 void ofxKinectV2::threadedFunction(){
+
     while(isThreadRunning()){
         protonect.updateKinect(rgbPixelsBack, depthPixelsBack);
         rgbPixelsFront.swap(rgbPixelsBack);
         depthPixelsFront.swap(depthPixelsBack);
-        
+                
         lock();
         bNewBuffer = true;
         unlock();
-        
-        ofSleepMillis(2);
     }
 }
 
@@ -67,6 +69,7 @@ void ofxKinectV2::update(){
         lastFrameNo = ofGetFrameNum();
     }
     if( bNewBuffer ){
+    
         lock();
             rgbPix = rgbPixelsFront;
             rawDepthPixels = depthPixelsFront;

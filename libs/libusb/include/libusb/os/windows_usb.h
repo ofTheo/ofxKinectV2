@@ -1,5 +1,5 @@
 /*
- * Windows backend for libusbx 1.0
+ * Windows backend for libusb 1.0
  * Copyright © 2009-2012 Pete Batard <pete@akeo.ie>
  * With contributions from Michael Plante, Orin Eman et al.
  * Parts of this code adapted from libusb-win32-v1 by Stephan Meyer
@@ -26,10 +26,12 @@
 
 #if defined(_MSC_VER)
 // disable /W4 MSVC warnings that are benign
-#pragma warning(disable:4127) // conditional expression is constant
-#pragma warning(disable:4100) // unreferenced formal parameter
-#pragma warning(disable:4214) // bit field types other than int
-#pragma warning(disable:4201) // nameless struct/union
+#pragma warning(disable:4100)  // unreferenced formal parameter
+#pragma warning(disable:4127)  // conditional expression is constant
+#pragma warning(disable:4201)  // nameless struct/union
+#pragma warning(disable:4214)  // bit field types other than int
+#pragma warning(disable:4996)  // deprecated API calls
+#pragma warning(disable:28159) // more deprecated API calls
 #endif
 
 // Missing from MSVC6 setupapi.h
@@ -40,11 +42,15 @@
 #define SPDRP_INSTALL_STATE	34
 #endif
 
+// Missing from MinGW
+#if !defined(FACILITY_SETUPAPI)
+#define FACILITY_SETUPAPI	15
+#endif
+
 #if defined(__CYGWIN__ )
 #define _stricmp stricmp
-// cygwin produces a warning unless these prototypes are defined
-extern int _snprintf(char *buffer, size_t count, const char *format, ...);
-extern char *_strdup(const char *strSource);
+#define _snprintf snprintf
+#define _strdup strdup
 // _beginthreadex is MSVCRT => unavailable for cygwin. Fallback to using CreateThread
 #define _beginthreadex(a, b, c, d, e, f) CreateThread(a, b, (LPTHREAD_START_ROUTINE)c, d, e, f)
 #endif
@@ -302,8 +308,20 @@ struct driver_lookup {
 	const char* designation;	// internal designation (for debug output)
 };
 
+#define WM_TIMER_REQUEST	(WM_USER + 1)
+#define WM_TIMER_EXIT		(WM_USER + 2)
+
+// used for monotonic clock_gettime()
+struct timer_request {
+	struct timespec *tp;
+	HANDLE event;
+};
+
 /* OLE32 dependency */
 DLL_DECLARE_PREFIXED(WINAPI, HRESULT, p, CLSIDFromString, (LPCOLESTR, LPCLSID));
+
+/* This call is only available from XP SP2 */
+DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, IsWow64Process, (HANDLE, PBOOL));
 
 /* SetupAPI dependencies */
 DLL_DECLARE_PREFIXED(WINAPI, HDEVINFO, p, SetupDiGetClassDevsA, (const GUID*, PCSTR, HWND, DWORD));
@@ -319,6 +337,11 @@ DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, SetupDiGetDeviceRegistryPropertyA, (HDEVIN
 DLL_DECLARE_PREFIXED(WINAPI, HKEY, p, SetupDiOpenDeviceInterfaceRegKey, (HDEVINFO, PSP_DEVICE_INTERFACE_DATA, DWORD, DWORD));
 DLL_DECLARE_PREFIXED(WINAPI, LONG, p, RegQueryValueExW, (HKEY, LPCWSTR, LPDWORD, LPDWORD, LPBYTE, LPDWORD));
 DLL_DECLARE_PREFIXED(WINAPI, LONG, p, RegCloseKey, (HKEY));
+
+/* User32 dependencies */
+DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, GetMessageA, (LPMSG, HWND, UINT, UINT));
+DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, PeekMessageA, (LPMSG, HWND, UINT, UINT, UINT));
+DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, PostThreadMessageA, (DWORD, UINT, WPARAM, LPARAM));
 
 /*
  * Windows DDK API definitions. Most of it copied from MinGW's includes
@@ -358,6 +381,9 @@ typedef RETURN_TYPE CONFIGRET;
 #endif
 #if !defined(USB_GET_HUB_CAPABILITIES_EX)
 #define USB_GET_HUB_CAPABILITIES_EX             276
+#endif
+#if !defined(USB_GET_NODE_CONNECTION_INFORMATION_EX_V2)
+#define USB_GET_NODE_CONNECTION_INFORMATION_EX_V2 279
 #endif
 
 #ifndef METHOD_BUFFERED
@@ -418,6 +444,9 @@ DLL_DECLARE(WINAPI, CONFIGRET, CM_Get_Device_IDA, (DEVINST, PCHAR, ULONG, ULONG)
 
 #define IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX \
   CTL_CODE(FILE_DEVICE_USB, USB_GET_NODE_CONNECTION_INFORMATION_EX, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX_V2 \
+  CTL_CODE(FILE_DEVICE_USB, USB_GET_NODE_CONNECTION_INFORMATION_EX_V2, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
 #define IOCTL_USB_GET_NODE_CONNECTION_ATTRIBUTES \
   CTL_CODE(FILE_DEVICE_USB, USB_GET_NODE_CONNECTION_ATTRIBUTES, METHOD_BUFFERED, FILE_ANY_ACCESS)
@@ -558,6 +587,32 @@ typedef struct USB_NODE_CONNECTION_INFORMATION_EX {
 	USB_CONNECTION_STATUS  ConnectionStatus;
 //	USB_PIPE_INFO  PipeList[0];
 } USB_NODE_CONNECTION_INFORMATION_EX, *PUSB_NODE_CONNECTION_INFORMATION_EX;
+
+typedef union _USB_PROTOCOLS {
+	ULONG  ul;
+	struct {
+		ULONG Usb110:1;
+		ULONG Usb200:1;
+		ULONG Usb300:1;
+		ULONG ReservedMBZ:29;
+	};
+} USB_PROTOCOLS, *PUSB_PROTOCOLS;
+
+typedef union _USB_NODE_CONNECTION_INFORMATION_EX_V2_FLAGS {
+	ULONG ul;
+	struct {
+		ULONG DeviceIsOperatingAtSuperSpeedOrHigher:1;
+		ULONG DeviceIsSuperSpeedCapableOrHigher:1;
+		ULONG ReservedMBZ:30;
+	};
+} USB_NODE_CONNECTION_INFORMATION_EX_V2_FLAGS, *PUSB_NODE_CONNECTION_INFORMATION_EX_V2_FLAGS;
+
+typedef struct _USB_NODE_CONNECTION_INFORMATION_EX_V2 {
+	ULONG ConnectionIndex;
+	ULONG Length;
+	USB_PROTOCOLS SupportedUsbProtocols;
+	USB_NODE_CONNECTION_INFORMATION_EX_V2_FLAGS Flags;
+} USB_NODE_CONNECTION_INFORMATION_EX_V2, *PUSB_NODE_CONNECTION_INFORMATION_EX_V2;
 
 typedef struct USB_HUB_CAP_FLAGS {
 	ULONG HubIsHighSpeedCapable:1;

@@ -30,7 +30,7 @@ void ofRGBPacketProcessor::process(const libfreenect2::RgbPacket &packet){
     
       memcpy(frame->data, pix.getPixels(), pix.size());
     
-      if(listener_->addNewFrame(Frame::Color, frame)){
+      if(listener_->onNewFrame(Frame::Color, frame)){
         newFrame();
       }
     }

@@ -10,7 +10,7 @@
 #include "ofImage.h"
 
 #include <libfreenect2/rgb_packet_processor.h>
-#include <libfreenect2/frame_listener.h>
+#include <libfreenect2/frame_listener.hpp>
 
 namespace libfreenect2{
 
