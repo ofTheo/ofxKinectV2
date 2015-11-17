@@ -20,21 +20,27 @@
 class ofProtonect{
 
     public:
+
+
     
         ofProtonect();
     
-        int openKinect(std::string dataPath);
+        int openKinect(std::string serialNo);
         void updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels);
         int closeKinect();
     
-        void exit(ofEventArgs & args);
+        libfreenect2::Freenect2 & getFreenect2Instance(){
+            return freenect2;
+        }
   
     protected:
+  
         bool bOpened;
         
+        libfreenect2::Freenect2 freenect2;
+
         libfreenect2::Freenect2Device *dev = 0;
         libfreenect2::PacketPipeline *pipeline = 0;
-        libfreenect2::Freenect2 freenect2;
 
         libfreenect2::FrameMap frames;
 

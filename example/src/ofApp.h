@@ -22,10 +22,9 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
         ofxPanel panel;
-        ofxSlider <int> minDistance;
-        ofxSlider <int> maxDistance;
     
-        ofxKinectV2 kinect;
-        ofTexture texDepth;
-        ofTexture texRGB; 
+        vector < shared_ptr<ofxKinectV2> > kinects;
+    
+        vector <ofTexture> texDepth;
+        vector <ofTexture> texRGB;
 };

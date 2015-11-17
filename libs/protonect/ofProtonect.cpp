@@ -41,27 +41,18 @@
 
 #include "ofProtonect.h"
 
-bool protonect_shutdown = false; ///< Whether the running application should shut down.
-
 ofProtonect::ofProtonect(){
     bOpened = false;
+
+    if( ofGetLogLevel() == OF_LOG_VERBOSE ){
+        libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Debug));
+    }else{
+        libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Warning));
+    }
 }
 
-int ofProtonect::openKinect(std::string binpath){
-      
-      // create a console logger with debug level (default is console logger with info level)
-      libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Debug));
-    
-      if(freenect2.enumerateDevices() == 0)
-      {
-        std::cout << "no device connected!" << std::endl;
-        return -1;
-      }
-
-      std::string serial = freenect2.getDefaultDeviceSerialNumber();
-
-      bool viewer_enabled = false;
-
+int ofProtonect::openKinect(string serial){
+          
 //      pipeline = new libfreenect2::CpuPacketPipeline();
         pipeline = new libfreenect2::OpenGLPacketPipeline();
 
@@ -72,12 +63,11 @@ int ofProtonect::openKinect(std::string binpath){
 
       if(dev == 0)
       {
-        std::cout << "failure opening device!" << std::endl;
+        ofLogError("ofProtonect::openKinect")  << "failure opening device with serial " << serial;
         return -1;
       }
 
-      protonect_shutdown = false;
-      
+    
       listener = new libfreenect2::SyncMultiFrameListener(libfreenect2::Frame::Color | libfreenect2::Frame::Ir | libfreenect2::Frame::Depth);
       undistorted = new libfreenect2::Frame(512, 424, 4);
       registered  = new libfreenect2::Frame(512, 424, 4);
@@ -86,19 +76,10 @@ int ofProtonect::openKinect(std::string binpath){
       dev->setIrAndDepthFrameListener(listener);
       dev->start();
 
-      std::cout << "device serial: " << dev->getSerialNumber() << std::endl;
-      std::cout << "device firmware: " << dev->getFirmwareVersion() << std::endl;
+      ofLogVerbose("ofProtonect::openKinect") << "device serial: " << dev->getSerialNumber();
+      ofLogVerbose("ofProtonect::openKinect") << "device firmware: " << dev->getFirmwareVersion();
 
       registration = new libfreenect2::Registration(dev->getIrCameraParams(), dev->getColorCameraParams());
-
-      size_t framecount = 0;
-    #ifdef EXAMPLES_WITH_OPENGL_SUPPORT
-      Viewer viewer;
-      if (viewer_enabled)
-        viewer.initialize();
-    #else
-      viewer_enabled = false;
-    #endif
 
     bOpened = true;
     
@@ -140,7 +121,6 @@ int ofProtonect::closeKinect(){
       registered = NULL;
       
       delete registration;
-      protonect_shutdown = true;
       bOpened = false; 
   }
 
