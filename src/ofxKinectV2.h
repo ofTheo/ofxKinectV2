@@ -30,7 +30,7 @@ class ofxKinectV2 : public ofThread{
     
         bool open(string serial);
         bool open(unsigned int deviceId = 0);
-        void update();
+		void update(bool convertDepthPix = true);
         void close();
     
         bool isFrameNew();

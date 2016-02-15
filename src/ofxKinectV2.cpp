@@ -113,7 +113,7 @@ void ofxKinectV2::threadedFunction(){
 }
 
 //--------------------------------------------------------------------------------
-void ofxKinectV2::update(){
+void ofxKinectV2::update(bool convertDepthPix){
     if( ofGetFrameNum() != lastFrameNo ){
         bNewFrame = false;
         lastFrameNo = ofGetFrameNum();
@@ -126,22 +126,24 @@ void ofxKinectV2::update(){
             bNewBuffer = false;
         unlock();
         
-        if( rawDepthPixels.size() > 0 ){
-            if( depthPix.getWidth() != rawDepthPixels.getWidth() ){
-                depthPix.allocate(rawDepthPixels.getWidth(), rawDepthPixels.getHeight(), 1);
-            }
-        
-            float * pixelsF         = rawDepthPixels.getData();
-            unsigned char * pixels  = depthPix.getData();
-                
-            for(int i = 0; i < depthPix.size(); i++){
-                pixels[i] = ofMap(rawDepthPixels[i], minDistance, maxDistance, 255, 0, true);
-                if( pixels[i] == 255 ){
-                    pixels[i] = 0;
-                }
-            }
+		if (convertDepthPix) {
+			if (rawDepthPixels.size() > 0) {
+				if (depthPix.getWidth() != rawDepthPixels.getWidth()) {
+					depthPix.allocate(rawDepthPixels.getWidth(), rawDepthPixels.getHeight(), 1);
+				}
 
-        }
+				float * pixelsF = rawDepthPixels.getData();
+				unsigned char * pixels = depthPix.getData();
+
+				for (int i = 0; i < depthPix.size(); i++) {
+					pixels[i] = ofMap(rawDepthPixels[i], minDistance, maxDistance, 255, 0, true);
+					if (pixels[i] == 255) {
+						pixels[i] = 0;
+					}
+				}
+
+			}
+		}
         
         
         bNewFrame = true; 
