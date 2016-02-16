@@ -156,17 +156,17 @@ bool ofxKinectV2::isFrameNew(){
 }
 
 //--------------------------------------------------------------------------------
-ofPixels ofxKinectV2::getDepthPixels(){
+ofPixels& ofxKinectV2::getDepthPixels(){
     return depthPix;
 }
 
 //--------------------------------------------------------------------------------
-ofFloatPixels ofxKinectV2::getRawDepthPixels(){
+ofFloatPixels& ofxKinectV2::getRawDepthPixels(){
     return rawDepthPixels;
 }
 
 //--------------------------------------------------------------------------------
-ofPixels ofxKinectV2::getRgbPixels(){
+ofPixels& ofxKinectV2::getRgbPixels(){
     return rgbPix; 
 }
 

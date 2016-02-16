@@ -35,9 +35,9 @@ class ofxKinectV2 : public ofThread{
     
         bool isFrameNew();
     
-        ofPixels getDepthPixels();
-        ofPixels getRgbPixels();
-        ofFloatPixels getRawDepthPixels();
+        ofPixels& getDepthPixels();
+        ofPixels& getRgbPixels();
+        ofFloatPixels& getRawDepthPixels();
     
         ofParameterGroup params;
         ofParameter <float> minDistance;
