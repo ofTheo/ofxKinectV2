@@ -179,4 +179,29 @@ void ofxKinectV2::close(){
     }
 }
 
+//--------------------------------------------------------------------------------
+float ofxKinectV2::getDistanceAt(int x, int y) {
+	if (!depthPix.isAllocated()) {
+		return 0.0f;
+	}
+	return depthPix[x + y * depthPix.getWidth()] * 0.1; // mm to cm
+}
 
+//--------------------------------------------------------------------------------
+// TODO: use undistorted
+ofVec3f ofxKinectV2::getWorldCoordinateAt(int x, int y) {
+	return getWorldCoordinateAt(x, y, getDistanceAt(x, y));
+}
+
+//--------------------------------------------------------------------------------
+ofVec3f ofxKinectV2::getWorldCoordinateAt(int x, int y, float z) {
+	libfreenect2::Freenect2Device::IrCameraParams p;
+	ofVec3f world;
+
+	p = *this->protonect.getIrCameraParams();
+	world.z = z;
+	world.x = (x - p.cx) * z / p.fx;
+	world.y = -(y - p.cy) * z / p.fy;
+
+	return world;
+}

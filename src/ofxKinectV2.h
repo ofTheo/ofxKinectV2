@@ -38,6 +38,10 @@ class ofxKinectV2 : public ofThread{
         ofPixels& getDepthPixels();
         ofPixels& getRgbPixels();
         ofFloatPixels& getRawDepthPixels();
+
+		float getDistanceAt(int x, int y);
+		ofVec3f getWorldCoordinateAt(int x, int y);
+		ofVec3f getWorldCoordinateAt(int x, int y, float z);
     
         ofParameterGroup params;
         ofParameter <float> minDistance;
