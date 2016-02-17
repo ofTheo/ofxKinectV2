@@ -90,6 +90,8 @@ bool ofxKinectV2::open(string serial){
     if(retVal==0){
         lastFrameNo = -1;
         startThread(true);
+        pointCloudFront.resize(512*424);
+        pointCloud = pointCloudBack = pointCloudFront;
     }else{
         return false;
     }
@@ -102,15 +104,30 @@ bool ofxKinectV2::open(string serial){
 void ofxKinectV2::threadedFunction(){
 
     while(isThreadRunning()){
-        protonect.updateKinect(rgbPixelsBack, depthPixelsBack);
+        protonect.updateKinect(rgbPixelsBack, depthPixelsBack, pointCloudBack);
         rgbPixelsFront.swap(rgbPixelsBack);
         depthPixelsFront.swap(depthPixelsBack);
                 
         lock();
+        pointCloudFront = pointCloudBack;
         bNewBuffer = true;
         unlock();
     }
 }
+
+//--------------------------------------------------------------------------------
+ofPoint ofxKinectV2::getWorldCoordinateAt(int x, int y){
+    int index = x + y * 512;
+    if( index >= 0 && index < pointCloud.size() ){
+        return pointCloud[index];
+    }
+}
+
+//--------------------------------------------------------------------------------
+vector <ofPoint> ofxKinectV2::getWorldCoordinates(){
+    return pointCloud;
+}
+
 
 //--------------------------------------------------------------------------------
 void ofxKinectV2::update(){
@@ -123,6 +140,7 @@ void ofxKinectV2::update(){
         lock();
             rgbPix = rgbPixelsFront;
             rawDepthPixels = depthPixelsFront;
+            pointCloud = pointCloudFront;
             bNewBuffer = false;
         unlock();
         
@@ -147,6 +165,7 @@ void ofxKinectV2::update(){
         bNewFrame = true; 
     }
 }
+
 
 //--------------------------------------------------------------------------------
 bool ofxKinectV2::isFrameNew(){
