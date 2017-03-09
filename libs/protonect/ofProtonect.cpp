@@ -54,7 +54,7 @@ ofProtonect::ofProtonect(){
 int ofProtonect::openKinect(string serial){
           
 //      pipeline = new libfreenect2::CpuPacketPipeline();
-//        pipeline = new libfreenect2::OpenGLPacketPipeline();
+//      pipeline = new libfreenect2::OpenGLPacketPipeline();
         pipeline = new libfreenect2::OpenCLPacketPipeline();
 
       if(pipeline)
@@ -72,6 +72,7 @@ int ofProtonect::openKinect(string serial){
       listener = new libfreenect2::SyncMultiFrameListener(libfreenect2::Frame::Color | libfreenect2::Frame::Ir | libfreenect2::Frame::Depth);
       undistorted = new libfreenect2::Frame(512, 424, 4);
       registered  = new libfreenect2::Frame(512, 424, 4);
+      rgb4 = new libfreenect2::Frame(1920, 1080, 4);
 
       dev->setColorFrameListener(listener);
       dev->setIrAndDepthFrameListener(listener);
@@ -87,7 +88,7 @@ int ofProtonect::openKinect(string serial){
     return 0;
 }
 
-void ofProtonect::updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels){
+void ofProtonect::updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels, vector <ofPoint> &pcPoints){
   
     if(bOpened){
         listener->waitForNewFrame(frames);
@@ -95,8 +96,24 @@ void ofProtonect::updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels
         libfreenect2::Frame *ir = frames[libfreenect2::Frame::Ir];
         libfreenect2::Frame *depth = frames[libfreenect2::Frame::Depth];
 
+        registration->apply(rgb4, depth, undistorted, registered);
+
         rgbPixels.setFromPixels(rgb->data, rgb->width, rgb->height, 3);
         depthPixels.setFromPixels((float *)depth->data, ir->width, ir->height, 1);
+
+        float rgbPix = 0;
+        if( pcPoints.size() == 424 * 512 ){
+            int i = 0;
+            for(int y = 0; y < 424; y++){
+                for(int x = 0; x < 512; x++){
+                    ofPoint & pt = pcPoints[i];
+                    registration->getPointXYZRGB(undistorted, registered, y, x, pt.x, pt.y, pt.z, rgbPix);
+                    //convert to mm
+                    pt *= 1000.0;
+                    i++;
+                }
+            }
+        }
 
         listener->release(frames);
     }
@@ -121,6 +138,9 @@ int ofProtonect::closeKinect(){
       delete registered;
       registered = NULL;
       
+      delete rgb4;
+      rgb4 = NULL;
+
       delete registration;
       bOpened = false; 
   }

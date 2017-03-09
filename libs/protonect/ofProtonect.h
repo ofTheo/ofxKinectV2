@@ -26,11 +26,15 @@ class ofProtonect{
         ofProtonect();
     
         int openKinect(std::string serialNo);
-        void updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels);
+        void updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels, vector <ofPoint> & pcPoints);
         int closeKinect();
     
         libfreenect2::Freenect2 & getFreenect2Instance(){
             return freenect2;
+        }
+
+        libfreenect2::Freenect2Device::IrCameraParams getIrCameraParams() {
+            return dev->getIrCameraParams();
         }
   
     protected:
@@ -48,6 +52,7 @@ class ofProtonect{
         libfreenect2::SyncMultiFrameListener * listener;
         libfreenect2::Frame  * undistorted = NULL;
         libfreenect2::Frame  * registered = NULL;
+        libfreenect2::Frame  * rgb4 = NULL;
         libfreenect2::Frame  * bigFrame = NULL;
 
 };
