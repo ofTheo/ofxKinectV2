@@ -33,10 +33,15 @@ class ofProtonect{
             return freenect2;
         }
 
-        libfreenect2::Freenect2Device::IrCameraParams getIrCameraParams() {
-            return dev->getIrCameraParams();
-        }
-  
+		libfreenect2::Freenect2Device::ColorCameraParams* getColorCameraParams() {
+			if (!dev) { return nullptr; }
+			return &dev->getColorCameraParams();
+		}
+		libfreenect2::Freenect2Device::IrCameraParams* getIrCameraParams() {
+			if (!dev) { return nullptr; }
+			return &dev->getIrCameraParams();
+		}
+
     protected:
   
         bool bOpened;

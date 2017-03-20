@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7FD42DF7-442E-479A-BA76-D0022F99702A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>example</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(CUDA_INC_PATH);%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxKinectV2\src;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\CL;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\usb;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libusb\include;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os;..\..\..\addons\ofxKinectV2\libs\protonect</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalLibraryDirectories>$(CUDA_LIB_PATH)\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;..\..\..\addons\ofxKinectV2\libs\libusb\lib\vs\libusb-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(CUDA_INC_PATH);%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxKinectV2\src;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\CL;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\usb;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libusb\include;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os;..\..\..\addons\ofxKinectV2\libs\protonect</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalLibraryDirectories>$(CUDA_LIB_PATH)\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenCL.lib;GLu32.lib;..\..\..\addons\ofxKinectV2\libs\libusb\lib\vs\libusb-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>robocopy "$(OF_ROOT)/export/vs/$(Platform_Actual)/" "$(ProjectDir)bin/" "*.dll" /njs /njh /np /fp /bytes
+if errorlevel 1 exit 0 else exit %errorlevel% 
+copy /Y "$(OF_ROOT)\addons\ofxKinectV2\libs\libusb\lib\vs\libusb-1.0.dll" "$(TargetDir)\libusb-1.0.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>$(CUDA_INC_PATH);%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxKinectV2\src;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\CL;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\usb;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libusb\include;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os;..\..\..\addons\ofxKinectV2\libs\protonect</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalLibraryDirectories>$(CUDA_LIB_PATH)\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ENTRY:"mainCRTStartup" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>OpenCL.lib;..\..\..\addons\ofxKinectV2\libs\libusb\lib\vs\libusb-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>robocopy "$(OF_ROOT)/export/vs/Win32/" "$(ProjectDir)bin/" "*.dll" /njs /njh /np /fp /bytes
+if errorlevel 1 exit 0 else exit %errorlevel%
+copy /Y "$(OF_ROOT)\addons\ofxKinectV2\libs\libusb\lib\vs\libusb-1.0.dll" "$(TargetDir)\libusb-1.0.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>$(CUDA_INC_PATH);%(AdditionalIncludeDirectories);src;..\..\..\addons\ofxGui\src;..\..\..\addons\ofxKinectV2\src;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\CL;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\usb;..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2;..\..\..\addons\ofxKinectV2\libs\libusb\include;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb;..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os;..\..\..\addons\ofxKinectV2\libs\protonect</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalLibraryDirectories>$(CUDA_LIB_PATH)\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/ENTRY:"mainCRTStartup" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>OpenCL.lib;..\..\..\addons\ofxKinectV2\libs\libusb\lib\vs\libusb-1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>robocopy "$(OF_ROOT)/export/vs/$(Platform_Actual)/" "$(ProjectDir)bin/" "*.dll" /njs /njh /np /fp /bytes
+if errorlevel 1 exit 0 else exit %errorlevel%
+copy /Y "$(OF_ROOT)\addons\ofxKinectV2\libs\libusb\lib\vs\libusb-1.0.dll" "$(TargetDir)libusb-1.0.dll" </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxBaseGui.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxButton.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxGuiGroup.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxLabel.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxPanel.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSlider.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSliderGroup.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\command_transaction.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\cpu_depth_packet_processor.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\depth_packet_processor.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\depth_packet_stream_parser.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\double_buffer.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\event_loop.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\flextGL.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\frame_listener_impl.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\libfreenect2.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\logging.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\opencl_depth_packet_processor.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\opengl_depth_packet_processor.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\packet_pipeline.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\registration.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\resource.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\rgb_packet_processor.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\rgb_packet_stream_parser.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\transfer_pool.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\usb_control.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\protonect\ofProtonect.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\libs\protonect\ofRGBPacketProcessor.cpp" />
+    <ClCompile Include="..\..\..\addons\ofxKinectV2\src\ofxKinectV2.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ofApp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxBaseGui.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxButton.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxGui.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxGuiGroup.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxLabel.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxPanel.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxSlider.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxSliderGroup.h" />
+    <ClInclude Include="..\..\..\addons\ofxGui\src\ofxToggle.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\CL\cl.hpp" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\async_packet_processor.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\data_callback.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\depth_packet_stream_parser.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\double_buffer.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\logging.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol\command.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol\command_transaction.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol\response.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\protocol\usb_control.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\resource.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\rgb_packet_stream_parser.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\threading.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\usb\event_loop.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\internal\libfreenect2\usb\transfer_pool.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\config.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\depth_packet_processor.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\frame_listener.hpp" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\frame_listener_impl.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\libfreenect2.hpp" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\logger.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\packet_pipeline.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\packet_processor.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\registration.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\include\libfreenect2\rgb_packet_processor.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libfreenect2\src\flextGL.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\hotplug.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\libusb.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\libusbi.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\darwin_usb.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\linux_usbfs.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\poll_posix.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\poll_windows.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\threads_posix.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\threads_windows.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\wince_usb.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\windows_common.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\os\windows_usb.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\version.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\libusb\include\libusb\version_nano.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\protonect\ofProtonect.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\libs\protonect\ofRGBPacketProcessor.h" />
+    <ClInclude Include="..\..\..\addons\ofxKinectV2\src\ofxKinectV2.h" />
+    <ClInclude Include="src\ofApp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
+      <Project>{5837595d-aca9-485c-8e76-729040ce4b0b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+    </ResourceCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
