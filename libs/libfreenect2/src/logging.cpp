@@ -65,7 +65,7 @@ Logger::Level Logger::getDefaultLevel()
     else if(env_logger_level_str == "error")
       l = Logger::Error;
     else if(env_logger_level_str == "none")
-      l = Logger::None;
+      l = Logger::NoLog;
   }
 
   return l;
