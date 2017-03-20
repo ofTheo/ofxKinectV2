@@ -43,7 +43,7 @@ public:
   /** Available levels of logging, higher is more output. */
   enum Level
   {
-    NoLog = 0,
+    None = 0,
     Error = 1,
     Warning = 2,
     Info = 3,
