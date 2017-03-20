@@ -32,6 +32,10 @@ class ofProtonect{
         libfreenect2::Freenect2 & getFreenect2Instance(){
             return freenect2;
         }
+
+        libfreenect2::Freenect2Device::IrCameraParams getIrCameraParams() {
+            return dev->getIrCameraParams();
+        }
   
     protected:
   

@@ -36,6 +36,7 @@ class ofxKinectV2 : public ofThread{
         bool isFrameNew();
     
         ofPoint getWorldCoordinateAt(int x, int y);
+        ofPoint getWorldCoordinateAt(int x, int y, int z);
         vector <ofPoint> getWorldCoordinates();
     
         ofPixels getDepthPixels();

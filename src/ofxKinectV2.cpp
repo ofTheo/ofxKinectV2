@@ -116,10 +116,31 @@ void ofxKinectV2::threadedFunction(){
 }
 
 //--------------------------------------------------------------------------------
+ofPoint ofxKinectV2::getWorldCoordinateAt(int x, int y, int z){
+    int index = x + y * 512;
+    libfreenect2::Freenect2Device::IrCameraParams params;
+    ofVec3f world;
+
+    if( index >= 0 && index < pointCloud.size() ){
+        world = pointCloud[index];
+        world.z = z;
+        params = protonect.getIrCameraParams();
+        world.x = (x - params.cx) * world.z / params.fx;
+        world.y = -(y - params.cy) * world.z / params.fy;
+
+        return world;
+    }
+}
+
+//--------------------------------------------------------------------------------
 ofPoint ofxKinectV2::getWorldCoordinateAt(int x, int y){
     int index = x + y * 512;
+    libfreenect2::Freenect2Device::IrCameraParams params;
+    ofVec3f world;
+
     if( index >= 0 && index < pointCloud.size() ){
-        return pointCloud[index];
+        world = pointCloud[index];
+        return getWorldCoordinateAt(x, y, world.z);
     }
 }
 
