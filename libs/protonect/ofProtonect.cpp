@@ -139,8 +139,12 @@ int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipeli
     return 0;
 }
 
-void ofProtonect::updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels, ofFloatPixels& irPixels){
-  
+void ofProtonect::updateKinect(ofPixels& rgbPixels,
+                               ofPixels& rgbRegisteredPixels,
+                               ofFloatPixels& depthPixels,
+                               ofFloatPixels& irPixels,
+                               ofFloatPixels& distancePixels)
+{
     if (bOpened)
     {
         if (!listener->waitForNewFrame(frames, 10 * 1000))
@@ -161,11 +165,22 @@ void ofProtonect::updateKinect(ofPixels & rgbPixels, ofFloatPixels & depthPixels
                                 registered);
         }
 
-        rgbPixels.setFromPixels(rgb->data, rgb->width, rgb->height, OF_PIXELS_BGRA);
-        depthPixels.setFromPixels((float *)depth->data, ir->width, ir->height, 1);
-
-        irPixels.setFromPixels((float*)ir->data, ir->width, ir->height, 1);
+        ofPixelFormat rgbFormat;
+        if (rgb->format == libfreenect2::Frame::BGRX)
+        {
+            rgbFormat = OF_PIXELS_BGRA;
+        }
+        else
+        {
+            rgbFormat = OF_PIXELS_RGBA;
+        }
         
+        rgbPixels.setFromPixels(rgb->data, rgb->width, rgb->height, rgbFormat);
+        rgbRegisteredPixels.setFromPixels(registered->data, registered->width, registered->height, rgbFormat);
+
+        depthPixels.setFromPixels(reinterpret_cast<float*>(depth->data), ir->width, ir->height, 1);
+        irPixels.setFromPixels(reinterpret_cast<float*>(ir->data), ir->width, ir->height, 1);
+
         listener->release(frames);
     }
 }
@@ -187,7 +202,7 @@ int ofProtonect::closeKinect()
       delete undistorted;
       delete registered;
       delete registration;
-      delete bigFrame;
+      //delete bigFrame;
       bOpened = false;
   }
 

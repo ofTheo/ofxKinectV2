@@ -6,7 +6,6 @@
 //
 //
 
-
 #pragma once
 
 
@@ -31,41 +30,86 @@ public:
     std::vector<KinectDeviceInfo> getDeviceList() const;
     std::size_t getNumDevices() const;
 
+    /// \brief Open the device with the given serial number.
+    /// \param serial The serial number to open.
+    /// \returns true if connected successfully.
     bool open(const std::string& serial);
+
+    /// \brief Open the device with the given serial number.
+    /// \param deviceId The device id to open.
+    /// \returns true if connected successfully.
     bool open(int deviceId = 0);
+
+    /// \brief Update the Kinect internals.
     void update();
+    
+    /// \brief Close the connection to the Kinect.
     void close();
 
+    /// \returns true if the frame has been updated.
     bool isFrameNew() const;
 
-    ofPixels getDepthPixels();
-    ofPixels getRgbPixels();
-    ofFloatPixels getRawDepthPixels();
-    ofFloatPixels getIrPixels();
+    OF_DEPRECATED_MSG("Use getPixels()", ofPixels getRgbPixels());
 
+    /// \returns the RGB pixels.
+    const ofPixels& getPixels() const;
+
+    /// \returns pixels registred to the depth image.
+    const ofPixels& getRegisteredPixels() const;
+
+    /// \returns the raw depth pixels.
+    const ofFloatPixels& getRawDepthPixels() const;
+
+    /// \returns the depth pixels mapped to a visible range.
+    const ofPixels& getDepthPixels() const;
+
+    /// \returns the raw IR pixels.
+    const ofFloatPixels& getRawIRPixels() const;
+
+    /// \returns the IR pixels mapped to a visible range.
+    const ofPixels& getIRPixels() const;
+
+    /// \returns the distance image. Each pixels is the distance in millimeters.
+    const ofFloatImage& getDistancePixels() const;
+    
+    /// \brief Get the calulated distance for point x, y in the getRegisteredPixels image.
+    float getDistanceAt(std::size_t x, std::size_t y) const;
+    
+    /// \brief Get the world X, Y, Z coordinates in millimeters for x, y in getRegisteredPixels image.
+    glm::vec3 getWorldCoordinateAt(std::size_t x, std::size_t y) const;
+    
     ofParameterGroup params;
-    ofParameter <float> minDistance;
-    ofParameter <float> maxDistance;
+    ofParameter<float> minDistance;
+    ofParameter<float> maxDistance;
 
 protected:
     void threadedFunction();
 
-    ofPixels rgbPix;
-    ofPixels depthPix;
+    ofPixels pixels;
+    ofPixels registeredPixels;
     ofFloatPixels rawDepthPixels;
-    ofFloatPixels irPix;
+    ofPixels depthPixels;
+    ofFloatPixels distancePixels;
 
+    ofFloatPixels rawIRPixels;
+    ofPixels irPixels;
+    
     bool bNewBuffer = false;
     bool bNewFrame = false;
     bool bOpened = false;
 
     mutable ofProtonect protonect;
+    
+    ofPixels pixelsBack;
+    ofPixels pixelsFront;
+    ofPixels registeredPixelsBack;
+    ofPixels registeredPixelsFront;
+    ofFloatPixels rawDepthPixelsBack;
+    ofFloatPixels rawDepthPixelsFront;
+    ofFloatPixels rawIRPixelsBack;
+    ofFloatPixels rawIRPixelsFront;
+    ofFloatPixels distancePixelsFront;
+    ofFloatPixels distancePixelsBack;
 
-    ofPixels rgbPixelsBack;
-    ofPixels rgbPixelsFront;
-    ofFloatPixels depthPixelsBack;
-    ofFloatPixels depthPixelsFront;
-    ofFloatPixels irPixelsBack;
-    ofFloatPixels irPixelsFront;
     int lastFrameNo = -1;
 };

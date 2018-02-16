@@ -108,11 +108,18 @@ void ofxKinectV2::threadedFunction()
 {
     while (isThreadRunning())
     {
-        protonect.updateKinect(rgbPixelsBack, depthPixelsBack, irPixelsBack);
-        rgbPixelsFront.swap(rgbPixelsBack);
-        depthPixelsFront.swap(depthPixelsBack);
-        irPixelsFront.swap(irPixelsBack);
-    
+        protonect.updateKinect(pixelsBack,
+                               registeredPixelsBack,
+                               rawDepthPixelsBack,
+                               rawIRPixelsBack,
+                               distancePixelsBack);
+        
+        pixelsFront.swap(pixelsBack);
+        registeredPixelsFront.swap(registeredPixelsBack);
+        rawDepthPixelsFront.swap(rawDepthPixelsBack);
+        rawIRPixelsFront.swap(rawIRPixelsBack);
+        distancePixelsFront.swap(distancePixelsBack);
+        
         lock();
         bNewBuffer = true;
         unlock();
@@ -131,30 +138,55 @@ void ofxKinectV2::update()
     if (bNewBuffer)
     {
         lock();
-            rgbPix = rgbPixelsFront;
-            rawDepthPixels = depthPixelsFront;
-            irPix = irPixelsFront;
+            pixels = pixelsFront;
+            registeredPixels = registeredPixelsFront;
+            rawDepthPixels = rawDepthPixelsFront;
+            rawIRPixels = rawIRPixelsFront;
             bNewBuffer = false;
         unlock();
-        
-        if( rawDepthPixels.size() > 0 ){
-            if( depthPix.getWidth() != rawDepthPixels.getWidth() ){
-                depthPix.allocate(rawDepthPixels.getWidth(), rawDepthPixels.getHeight(), 1);
+
+        // TODO: This is inefficient and we should be able to turn it off or
+        // draw it directly with a shader.
+        if (rawDepthPixels.size() > 0)
+        {
+            if (depthPixels.getWidth() != rawDepthPixels.getWidth())
+            {
+                depthPixels.allocate(rawDepthPixels.getWidth(), rawDepthPixels.getHeight(), 1);
             }
         
-            float * pixelsF         = rawDepthPixels.getData();
-            unsigned char * pixels  = depthPix.getData();
+            float* pixelsF = rawDepthPixels.getData();
+            unsigned char * pixelsC = depthPixels.getData();
                 
-            for(int i = 0; i < depthPix.size(); i++){
-                pixels[i] = ofMap(rawDepthPixels[i], minDistance, maxDistance, 255, 0, true);
-                if( pixels[i] == 255 ){
-                    pixels[i] = 0;
+            for (std::size_t i = 0; i < depthPixels.size(); i++)
+            {
+                pixelsC[i] = ofMap(pixelsF[i], minDistance, maxDistance, 255, 0, true);
+            
+                if (pixelsC[i] == 255)
+                {
+                    pixelsC[i] = 0;
                 }
             }
-
         }
         
-        bNewFrame = true; 
+        // TODO: This is inefficient and we should be able to turn it off or
+        // draw it directly with a shader.
+        if (rawIRPixels.size() > 0)
+        {
+            if (irPixels.getWidth() != rawIRPixels.getWidth())
+            {
+                irPixels.allocate(rawIRPixels.getWidth(), rawIRPixels.getHeight(), 1);
+            }
+            
+            float* pixelsF = rawIRPixels.getData();
+            unsigned char * pixelsC = irPixels.getData();
+            
+            for (std::size_t i = 0; i < irPixels.size(); i++)
+            {
+                pixelsC[i] = ofMap(pixelsF[i], 0, 4500, 0, 255, true);
+            }
+        }
+
+        bNewFrame = true;
     }
 }
 
@@ -165,27 +197,70 @@ bool ofxKinectV2::isFrameNew() const
 }
 
 
-ofPixels ofxKinectV2::getDepthPixels()
+ofPixels ofxKinectV2::getRgbPixels()
 {
-    return depthPix;
+    return getPixels();
 }
 
 
-ofFloatPixels ofxKinectV2::getRawDepthPixels()
+const ofPixels& ofxKinectV2::getPixels() const
+{
+    return pixels;
+}
+
+
+const ofPixels& ofxKinectV2::getRegisteredPixels() const
+{
+    return registeredPixels;
+}
+
+
+const ofFloatPixels& ofxKinectV2::getRawDepthPixels() const
 {
     return rawDepthPixels;
 }
 
 
-ofPixels ofxKinectV2::getRgbPixels()
+const ofPixels& ofxKinectV2::getDepthPixels() const
 {
-    return rgbPix; 
+    return depthPixels;
 }
 
 
-ofFloatPixels ofxKinectV2::getIrPixels()
+const ofFloatPixels& ofxKinectV2::getRawIRPixels() const
 {
-    return irPix;
+    return rawIRPixels;
+}
+
+
+const ofPixels& ofxKinectV2::getIRPixels() const
+{
+    return irPixels;
+}
+
+
+float ofxKinectV2::getDistanceAt(std::size_t x, std::size_t y) const
+{
+    return glm::distance(glm::vec3(0, 0, 0), getWorldCoordinateAt(x, y));
+}
+
+glm::vec3 ofxKinectV2::getWorldCoordinateAt(std::size_t x, std::size_t y) const
+{
+    glm::vec3 position;
+    
+    if (protonect.registration && protonect.undistorted)
+    {
+//        std::cout << x << ", " << protonect.undistorted->width << std::endl;
+//        std::cout << y << ", " << protonect.undistorted->height << std::endl;
+//        
+        if (x < protonect.undistorted->width && y < protonect.undistorted->height)
+            protonect.registration->getPointXYZ(protonect.undistorted, y, x, position.x, position.y, position.z);
+        else ofLogWarning("ofxKinectV2::getWorldCoordinateAt") << "Invalid x, y coordinates.";
+
+    }
+    else ofLogWarning("ofxKinectV2::getWorldCoordinateAt") << "Kinect is not initialized, returning 0, 0, 0.";
+    
+    return position;
 }
 
 

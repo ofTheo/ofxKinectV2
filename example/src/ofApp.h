@@ -15,13 +15,26 @@ public:
 
     void keyPressed(int key) override;
     
+    void drawTextureAtRowAndColumn(const std::string& title,
+                                   const ofTexture& tex,
+                                   int row,
+                                   int column);
+    
     ofxPanel panel;
 
     std::vector<std::shared_ptr<ofxKinectV2>> kinects;
 
-    std::vector<ofTexture> texDepth;
     std::vector<ofTexture> texRGB;
+    std::vector<ofTexture> texRGBRegistered;
     std::vector<ofTexture> texIR;
+    std::vector<ofTexture> texDepth;
     
     std::size_t currentKinect = 0;
+    
+    int numRows = 2;
+    int numColumns = 2;
+
+    ofEasyCam cam;
+    ofMesh pointCloud;
+    bool showPointCloud = false;
 };

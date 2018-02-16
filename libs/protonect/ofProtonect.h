@@ -10,9 +10,7 @@
 #include <libfreenect2/registration.h>
 #include <libfreenect2/packet_pipeline.h>
 #include <libfreenect2/logger.h>
-//#include <transfer_pool.h>
-//#include <event_loop.h>
-#include "ofRGBPacketProcessor.h"
+
 
 #include "ofAppGLFWWindow.h"
 #include "ofAppRunner.h"
@@ -40,8 +38,10 @@ public:
              PacketPipelineType packetPipelineType = PacketPipelineType::DEFAULT);
     
     void updateKinect(ofPixels& rgbPixels,
+                      ofPixels& rgbRegisteredPixels,
                       ofFloatPixels& depthPixels,
-                      ofFloatPixels& irPixels);
+                      ofFloatPixels& irPixels,
+                      ofFloatPixels& distancePixels);
 
     int closeKinect();
 
@@ -59,15 +59,16 @@ protected:
     
     libfreenect2::Freenect2 freenect2;
 
-    libfreenect2::Freenect2Device* dev;
-    libfreenect2::PacketPipeline* pipeline;
+    libfreenect2::Freenect2Device* dev = nullptr;
+    libfreenect2::PacketPipeline* pipeline = nullptr;
 
     libfreenect2::FrameMap frames;
 
-    libfreenect2::Registration* registration;
-    libfreenect2::SyncMultiFrameListener* listener;
-    libfreenect2::Frame* undistorted;
-    libfreenect2::Frame* registered;
-    libfreenect2::Frame* bigFrame;
+    libfreenect2::Registration* registration = nullptr;
+    libfreenect2::SyncMultiFrameListener* listener = nullptr;
+    libfreenect2::Frame* undistorted = nullptr;
+    libfreenect2::Frame* registered = nullptr;
+    libfreenect2::Frame* bigFrame = nullptr;
 
+    friend class ofxKinectV2;
 };
