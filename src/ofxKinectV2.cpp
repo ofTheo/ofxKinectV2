@@ -8,121 +8,132 @@
 
 #include "ofxKinectV2.h"
 
-//--------------------------------------------------------------------------------
-ofxKinectV2::ofxKinectV2(){
-    bNewFrame  = false;
-    bNewBuffer = false;
-    bOpened    = false;
-    lastFrameNo = -1;
-    
+
+ofxKinectV2::ofxKinectV2()
+{
     //set default distance range to 50cm - 600cm
-    
     params.add(minDistance.set("minDistance", 500, 0, 12000));
     params.add(maxDistance.set("maxDistance", 6000, 0, 12000));
 }
 
-//--------------------------------------------------------------------------------
-ofxKinectV2::~ofxKinectV2(){
+
+ofxKinectV2::~ofxKinectV2()
+{
     close();
 }
 
-//--------------------------------------------------------------------------------
-static bool sortBySerialName( const ofxKinectV2::KinectDeviceInfo & A, const ofxKinectV2::KinectDeviceInfo & B ){
-    return A.serial < B.serial;
-}
 
-//--------------------------------------------------------------------------------
-vector <ofxKinectV2::KinectDeviceInfo> ofxKinectV2::getDeviceList(){
-    vector <KinectDeviceInfo> devices;
+std::vector<ofxKinectV2::KinectDeviceInfo> ofxKinectV2::getDeviceList() const
+{
+    std::vector<KinectDeviceInfo> devices;
     
     int num = protonect.getFreenect2Instance().enumerateDevices();
-    for (int i = 0; i < num; i++){
+
+    for (int i = 0; i < num; i++)
+    {
         KinectDeviceInfo kdi;
         kdi.serial = protonect.getFreenect2Instance().getDeviceSerialNumber(i);
         kdi.freenectId = i; 
         devices.push_back(kdi);
     }
     
-    ofSort(devices, sortBySerialName);
-    for (int i = 0; i < num; i++){
+    ofSort(devices, [](const ofxKinectV2::KinectDeviceInfo& A,
+                       const ofxKinectV2::KinectDeviceInfo& B)
+           {
+               return A.serial < B.serial;
+           });
+
+    for (std::size_t i = 0; i < num; i++)
+    {
         devices[i].deviceId = i;
     }
     
     return devices;
 }
 
-//--------------------------------------------------------------------------------
-unsigned int ofxKinectV2::getNumDevices(){
+
+std::size_t ofxKinectV2::getNumDevices() const
+{
    return getDeviceList().size(); 
 }
 
-//--------------------------------------------------------------------------------
-bool ofxKinectV2::open(unsigned int deviceId){
+
+bool ofxKinectV2::open(int deviceId)
+{
+    std::vector<KinectDeviceInfo> devices = getDeviceList();
     
-    vector <KinectDeviceInfo> devices = getDeviceList();
-    
-    if( devices.size() == 0 ){
+    if (devices.empty())
+    {
         ofLogError("ofxKinectV2::open") << "no devices connected!";
         return false;
     }
     
-    if( deviceId >= devices.size() ){
+    if(deviceId >= devices.size())
+    {
         ofLogError("ofxKinectV2::open") << " deviceId " << deviceId << " is bigger or equal to the number of connected devices " << devices.size() << endl;
         return false;
     }
 
     string serial = devices[deviceId].serial;
+    
     return open(serial);
 }
 
-//--------------------------------------------------------------------------------
-bool ofxKinectV2::open(string serial){
+
+bool ofxKinectV2::open(const std::string& serial)
+{
     close(); 
-    
+
     params.setName("kinectV2 " + serial);
     
     bNewFrame  = false;
     bNewBuffer = false;
     bOpened    = false;
     
-    int retVal = protonect.openKinect(serial);
+    int retVal = protonect.open(serial);
     
-    if(retVal==0){
-        lastFrameNo = -1;
-        startThread(true);
-    }else{
+    if (retVal != 0)
+    {
         return false;
     }
     
+    lastFrameNo = -1;
+    startThread();
     bOpened = true;
     return true;
 }
 
-//--------------------------------------------------------------------------------
-void ofxKinectV2::threadedFunction(){
 
-    while(isThreadRunning()){
-        protonect.updateKinect(rgbPixelsBack, depthPixelsBack);
+void ofxKinectV2::threadedFunction()
+{
+    while (isThreadRunning())
+    {
+        protonect.updateKinect(rgbPixelsBack, depthPixelsBack, irPixelsBack);
         rgbPixelsFront.swap(rgbPixelsBack);
         depthPixelsFront.swap(depthPixelsBack);
-                
+        irPixelsFront.swap(irPixelsBack);
+    
         lock();
         bNewBuffer = true;
         unlock();
     }
 }
 
-//--------------------------------------------------------------------------------
-void ofxKinectV2::update(){
-    if( ofGetFrameNum() != lastFrameNo ){
+
+void ofxKinectV2::update()
+{
+    if (ofGetFrameNum() != lastFrameNo)
+    {
         bNewFrame = false;
         lastFrameNo = ofGetFrameNum();
     }
-    if( bNewBuffer ){
     
+    if (bNewBuffer)
+    {
         lock();
             rgbPix = rgbPixelsFront;
             rawDepthPixels = depthPixelsFront;
+            irPix = irPixelsFront;
             bNewBuffer = false;
         unlock();
         
@@ -143,38 +154,47 @@ void ofxKinectV2::update(){
 
         }
         
-        
         bNewFrame = true; 
     }
 }
 
-//--------------------------------------------------------------------------------
-bool ofxKinectV2::isFrameNew(){
+
+bool ofxKinectV2::isFrameNew() const
+{
     return bNewFrame; 
 }
 
-//--------------------------------------------------------------------------------
-ofPixels ofxKinectV2::getDepthPixels(){
+
+ofPixels ofxKinectV2::getDepthPixels()
+{
     return depthPix;
 }
 
-//--------------------------------------------------------------------------------
-ofFloatPixels ofxKinectV2::getRawDepthPixels(){
+
+ofFloatPixels ofxKinectV2::getRawDepthPixels()
+{
     return rawDepthPixels;
 }
 
-//--------------------------------------------------------------------------------
-ofPixels ofxKinectV2::getRgbPixels(){
+
+ofPixels ofxKinectV2::getRgbPixels()
+{
     return rgbPix; 
 }
 
-//--------------------------------------------------------------------------------
-void ofxKinectV2::close(){
-    if( bOpened ){
+
+ofFloatPixels ofxKinectV2::getIrPixels()
+{
+    return irPix;
+}
+
+
+void ofxKinectV2::close()
+{
+    if (bOpened)
+    {
         waitForThread(true);
         protonect.closeKinect();
         bOpened = false;
     }
 }
-
-

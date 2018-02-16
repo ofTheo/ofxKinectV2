@@ -1,30 +1,27 @@
 #pragma once
 
+
 #include "ofMain.h"
 #include "ofxKinectV2.h"
 #include "ofxGui.h"
 
-class ofApp : public ofBaseApp{
 
-	public:
-		void setup();
-		void update();
-		void draw();
+class ofApp: public ofBaseApp
+{
+public:
+    void setup() override;
+    void update() override;
+    void draw() override;
 
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-
-        ofxPanel panel;
+    void keyPressed(int key) override;
     
-        vector < shared_ptr<ofxKinectV2> > kinects;
+    ofxPanel panel;
+
+    std::vector<std::shared_ptr<ofxKinectV2>> kinects;
+
+    std::vector<ofTexture> texDepth;
+    std::vector<ofTexture> texRGB;
+    std::vector<ofTexture> texIR;
     
-        vector <ofTexture> texDepth;
-        vector <ofTexture> texRGB;
+    std::size_t currentKinect = 0;
 };

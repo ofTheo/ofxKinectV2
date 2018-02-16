@@ -6,7 +6,7 @@ meta:
 	ADDON_URL = https://github.com/ofTheo/ofxKinectV2
 
 osx:
-	ADDON_FRAMEWORKS = OpenCL
+	ADDON_FRAMEWORKS = OpenCL VideoToolbox
 
 linux64:
 	# linux only, any library that should be included in the project using
