@@ -78,6 +78,7 @@
 # incorporated directly into the final executable application binary.
 # TODO: should this be a default setting?
 # PROJECT_LDFLAGS=-Wl,-rpath=./libs
+PROJECT_LDFLAGS=-L/usr/local/lib/ -lfreenect2 -L/usr/local/cuda-10.1/lib64 -lcuda -lcudart
 
 ################################################################################
 # PROJECT DEFINES
