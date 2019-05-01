@@ -71,10 +71,10 @@ int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipeli
             break;
 #if defined(LIBFREENECT2_WITH_CUDA_SUPPORT)
         case PacketPipelineType::CUDA:
-            pipeline = new libfreenect2::CUDAPacketPipeline(deviceId);
+            pipeline = new libfreenect2::CudaPacketPipeline(deviceId);
             break;
         case PacketPipelineType::CUDAKDE:
-            pipeline = new libfreenect2::CUDAKdePacketPipeline(deviceId);
+            pipeline = new libfreenect2::CudaKdePacketPipeline(deviceId);
             break;
 #endif
         case PacketPipelineType::DEFAULT:
