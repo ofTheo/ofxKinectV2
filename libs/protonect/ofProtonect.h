@@ -27,7 +27,7 @@ public:
         OPENCL,
         OPENCLKDE
 #if defined(LIBFREENECT2_WITH_CUDA_SUPPORT)
-        CUDA
+        , CUDA,
         CUDAKDE
 #endif
     };
