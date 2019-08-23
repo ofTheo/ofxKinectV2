@@ -12,10 +12,10 @@ linux64:
 	# linux only, any library that should be included in the project using
 	# pkg-config
 	ADDON_PKG_CONFIG_LIBRARIES = libusb-1.0 OpenCL
-
+	ADDON_LDFLAGS = -L/usr/local/lib/ -lfreenect2 -L/usr/local/cuda/lib64 -lcuda -lcudart
 	# when parsing the file system looking for include paths exclude this for all or
 	# a specific platform
-	ADDON_INCLUDES_EXCLUDE = libs/libusb/%
+	#ADDON_INCLUDES_EXCLUDE = libs/libusb/%
 
 linux:
 	# linux only, any library that should be included in the project using
@@ -25,3 +25,12 @@ linux:
 	# when parsing the file system looking for include paths exclude this for all or
 	# a specific platform
 	ADDON_INCLUDES_EXCLUDE = libs/libusb/%
+
+linuxarmv7l:
+	# linux only, any library that should be included in the project using
+	# pkg-config
+	ADDON_PKG_CONFIG_LIBRARIES = freenect2 cuda-10.0 cudart-10.0 #libusb-1.0 OpenCL
+	#ADDON_LDFLAGS = -L/usr/local/lib/ -lfreenect2 -L/usr/local/cuda/lib64 -lcuda -lcudart
+	# when parsing the file system looking for include paths exclude this for all or
+	# a specific platform
+	#ADDON_INCLUDES_EXCLUDE = libs/libusb/%

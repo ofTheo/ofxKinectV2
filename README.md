@@ -10,6 +10,8 @@ New:
 - Uses OpenCL based decoding by default = much faster decoding 
 - Less crashes on startup and shutdown 
 - Supports both the early beta device and the new retail device. 
+- Supports `linux64`, see detailed installation instructions [here](https://gist.github.com/madelinegannon/10f62caba7184b90ea43a734768e5147).
+- Supports `linuxarmv7l`, see detailed installation instructions [here](https://gist.github.com/madelinegannon/237733e6c114f156b31366f47c1f3d32).
 
 
 Notes:
