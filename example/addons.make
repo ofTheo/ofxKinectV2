@@ -1,2 +1,2 @@
-ofxKinectV2
 ofxGui
+ofxKinectV2
