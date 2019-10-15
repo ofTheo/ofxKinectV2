@@ -41,6 +41,24 @@
 #include <libfreenect2/logger.h>
 
 
+libfreenect2::Freenect2Device::Config ofProtonect::mConfig;
+bool ofProtonect::bConfigSet = false;
+
+void ofProtonect::setMinMaxDistance(float minMeters, float maxMeters){
+    libfreenect2::Freenect2Device::Config tConfig;
+    tConfig.MinDepth = minMeters;
+    tConfig.MaxDepth = maxMeters;
+    tConfig.EnableBilateralFilter = true; //these are good defaults - use setConfig if you care to chang
+    tConfig.EnableEdgeAwareFilter = true; //these are good defaults - use setConfig if you care to chang
+    
+    setConfiguration(tConfig);
+}
+
+void ofProtonect::setConfiguration(libfreenect2::Freenect2Device::Config config){
+    mConfig = config;
+    bConfigSet = true; 
+}
+
 ofProtonect::ofProtonect()
 {
     if (ofGetLogLevel() == OF_LOG_VERBOSE)
@@ -107,6 +125,11 @@ int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipeli
     
     dev->setColorFrameListener(listener);
     dev->setIrAndDepthFrameListener(listener);
+    
+    if( !bConfigSet ){
+        setMinMaxDistance(0.5, 8.0);
+    }
+    dev->setConfiguration(mConfig);
     
     /// [start]
     if (enableRGB && enableDepth)

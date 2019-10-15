@@ -29,6 +29,15 @@ public:
     //for some reason these can't be static - so you need to make a tmp object to query them
     std::vector<KinectDeviceInfo> getDeviceList() const;
     std::size_t getNumDevices() const;
+    
+    /// \brief Set the depth range (Max usable range is 0.5m-11m). Call before opening the Kinect.
+    /// \param minMeters Min distance in meters defaults to 0.5m
+    /// \param maxMeters Max distance in meters defaults to 8.0m
+    static void setMinMaxDistance(float minMeters, float maxMeters);
+
+    /// \brief Set the configuration for the Kinect before intialization
+    /// \param config Configuration settings including range and edge and median processing
+    static void setFreenectConfiguration(libfreenect2::Freenect2Device::Config config);
 
     /// \brief Open the device with the given serial number.
     /// \param serial The serial number to open.
@@ -81,6 +90,7 @@ public:
     ofParameterGroup params;
     ofParameter<float> minDistance;
     ofParameter<float> maxDistance;
+    ofParameter<float> irExposure;
 
 protected:
     void threadedFunction();
