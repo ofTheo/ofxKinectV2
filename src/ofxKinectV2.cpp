@@ -8,12 +8,24 @@
 
 #include "ofxKinectV2.h"
 
+//static
+void ofxKinectV2::setMinMaxDistance(float minMeters, float maxMeters)
+{
+    ofProtonect::setMinMaxDistance(minMeters, maxMeters);
+}
 
+void ofxKinectV2::setFreenectConfiguration(libfreenect2::Freenect2Device::Config config)
+{
+    ofProtonect::setConfiguration(config);
+}
+
+//non-static
 ofxKinectV2::ofxKinectV2()
 {
     //set default distance range to 50cm - 600cm
     params.add(minDistance.set("minDistance", 500, 0, 12000));
-    params.add(maxDistance.set("maxDistance", 6000, 0, 12000));
+    params.add(maxDistance.set("maxDistance", 6000, 0, 24000));
+    params.add(irExposure.set("irExposure", 1.0, 0.01, 10.0));
 }
 
 
@@ -179,10 +191,12 @@ void ofxKinectV2::update()
             
             float* pixelsF = rawIRPixels.getData();
             unsigned char * pixelsC = irPixels.getData();
-            
+                        
             for (std::size_t i = 0; i < irPixels.size(); i++)
             {
-                pixelsC[i] = ofMap(pixelsF[i], 0, 4500, 0, 255, true);
+                //this is an arbitary mapping at the moment.
+                //basically exposure. 6000.0 = max brightness seems to be good. 
+                pixelsC[i] = std::min(255.0, 255.0 * irExposure * (pixelsF[i]/6000.0));
             }
         }
 
