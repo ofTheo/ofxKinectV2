@@ -213,15 +213,23 @@ int ofProtonect::closeKinect()
   if (bOpened)
   {
       listener->release(frames);
-
+      
+      
       // TODO: restarting ir stream doesn't work!
       // TODO: bad things will happen, if frame listeners are freed before dev->stop() :(
       dev->stop();
       dev->close();
 
       delete dev;
-      delete pipeline;
-      delete listener;
+      if (pipeline) {
+//          delete pipeline;
+          pipeline = nullptr;
+      }
+      if( listener ) {
+//          delete listener;
+          listener = nullptr;
+      }
+      
       delete undistorted;
       delete registered;
       delete registration;
