@@ -24,6 +24,7 @@
  * either License.
  */
 
+#if defined(__APPLE__)
 
 #include <libfreenect2/rgb_packet_processor.h>
 #include <libfreenect2/logging.h>
@@ -177,3 +178,5 @@ void VTRgbPacketProcessor::process(const RgbPacket &packet)
 }
 
 } /* namespace libfreenect2 */
+
+#endif

@@ -8,6 +8,11 @@ meta:
 osx:
 	ADDON_FRAMEWORKS = OpenCL VideoToolbox
 
+vs:
+	#ADDON_LIBS_EXCLUDE = 
+	#ADDON_INCLUDES_EXCLUDE = "libs\libfreenect2\src\vt_rgb_packet_processor.cpp"
+	#ADDON_INCLUDES = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"
+
 linux64:
 	# linux only, any library that should be included in the project using
 	# pkg-config

@@ -26,6 +26,8 @@
 
 /** @file turbo_jpeg_rgb_packet_processor.cpp JPEG decoder with Turbo Jpeg. */
 
+#include "config.h"
+#ifdef LIBFREENECT2_WITH_TURBOJPEG_SUPPORT
 #include <libfreenect2/rgb_packet_processor.h>
 #include <libfreenect2/logging.h>
 #include <turbojpeg.h>
@@ -115,3 +117,5 @@ void TurboJpegRgbPacketProcessor::process(const RgbPacket &packet)
 }
 
 } /* namespace libfreenect2 */
+
+#endif
