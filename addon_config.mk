@@ -7,6 +7,10 @@ meta:
 
 osx:
 	ADDON_FRAMEWORKS = OpenCL VideoToolbox
+    ADDON_INCLUDES_EXCLUDE  = "libs/libturbojpeg"
+    ADDON_INCLUDES_EXCLUDE  += "libs/libturbojpeg/%"
+    ADDON_INCLUDES_EXCLUDE  += "libs/opencl"
+    ADDON_INCLUDES_EXCLUDE  += "libs/opencl/%"
 
 vs:
 	#ADDON_LIBS_EXCLUDE = 
