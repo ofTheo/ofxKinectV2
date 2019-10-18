@@ -34,11 +34,11 @@ public:
 
     ofProtonect();
     
-    static void setMinMaxDistance(float minMeters, float maxMeters);
-    static void setConfiguration(libfreenect2::Freenect2Device::Config config);
+    //static void setMinMaxDistance(float minMeters, float maxMeters);
+    //static void setConfiguration(libfreenect2::Freenect2Device::Config config);
 
     int open(const std::string& serial,
-             PacketPipelineType packetPipelineType = PacketPipelineType::DEFAULT);
+             PacketPipelineType packetPipelineType, libfreenect2::Freenect2Device::Config aConfig );
     
     void updateKinect(ofPixels& rgbPixels,
                       ofPixels& rgbRegisteredPixels,
@@ -52,10 +52,25 @@ public:
     {
         return freenect2;
     }
+
+	void setRGBEnabled(bool ab) {
+		enableRGB = ab;
+	};
+	void setDepthEnabled(bool ab) {
+		enableDepth = ab;
+	};
+	void setIREnabled(bool ab) {
+		enableIR = ab;
+	}
+	void setEnableRGBRegistration(bool ab) {
+		enableRGBRegistration = ab;
+	}
   
 protected:
     bool enableRGB = true;
     bool enableDepth = true;
+	bool enableIR = true;
+	bool enableRGBRegistration = true;
     int deviceId = -1;
 
     bool bOpened = false;
@@ -73,8 +88,8 @@ protected:
     libfreenect2::Frame* registered = nullptr;
     libfreenect2::Frame* bigFrame = nullptr;
     
-    static libfreenect2::Freenect2Device::Config mConfig;
-    static bool bConfigSet; 
+    //static libfreenect2::Freenect2Device::Config mConfig;
+    //static bool bConfigSet; 
 
     friend class ofxKinectV2;
 };

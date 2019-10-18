@@ -27,12 +27,16 @@ void ofApp::setup()
 
     panel.setup("", "settings.xml", 10, 100);
     
+	ofxKinectV2::Settings ksettings;
+	ksettings.enableRGB = true;
+	ksettings.enableIR = true;
+	ksettings.enableDepth = true;
+	ksettings.enableRGBRegistration = true;
     // Note you don't have to use ofxKinectV2 as a shared pointer, but if you
     // want to have it in a vector ( ie: for multuple ) it needs to be.
-    for(int d = 0; d < kinects.size(); d++)
-    {
+    for(int d = 0; d < kinects.size(); d++) {
         kinects[d] = std::make_shared<ofxKinectV2>();
-        kinects[d]->open(deviceList[d].serial);
+        kinects[d]->open(deviceList[d].serial, ksettings);
         panel.add(kinects[d]->params);
     }
 
@@ -49,10 +53,10 @@ void ofApp::update()
         
         if (kinects[d]->isFrameNew())
         {
-            texRGB[d].loadData(kinects[d]->getPixels());
-            texRGBRegistered[d].loadData(kinects[d]->getRegisteredPixels());
-            texIR[d].loadData(kinects[d]->getIRPixels());
-            texDepth[d].loadData(kinects[d]->getDepthPixels());
+            if( kinects[d]->isRGBEnabled()) texRGB[d].loadData(kinects[d]->getPixels());
+            if(kinects[d]->getRegisteredPixels().getWidth() > 10) texRGBRegistered[d].loadData(kinects[d]->getRegisteredPixels());
+            if(kinects[d]->isIREnabled()) texIR[d].loadData(kinects[d]->getIRPixels());
+            if(kinects[d]->isDepthEnabled() ) texDepth[d].loadData(kinects[d]->getDepthPixels());
 
             if (showPointCloud)
             {

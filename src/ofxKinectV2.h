@@ -22,6 +22,23 @@ public:
         int freenectId; //don't use this one - this is the index given by freenect2 - but this can change based on order device is plugged in
     };
 
+	class Settings {
+	public:
+		Settings() {
+			config.MinDepth = 0.5f;
+			config.MaxDepth = 8.f;
+			config.EnableBilateralFilter = true; //these are good defaults - use setConfig if you care to chang
+			config.EnableEdgeAwareFilter = true;
+		};
+
+		bool enableDepth = true;
+		bool enableRGB = true;
+		bool enableIR = true;
+		bool enableRGBRegistration = true;
+		libfreenect2::Freenect2Device::Config config;
+		ofProtonect::PacketPipelineType pipeline = ofProtonect::PacketPipelineType::OPENCL;
+	};
+
     ofxKinectV2();
     ~ofxKinectV2();
     
@@ -29,24 +46,16 @@ public:
     std::vector<KinectDeviceInfo> getDeviceList() const;
     std::size_t getNumDevices() const;
     
-    /// \brief Set the depth range (Max usable range is 0.5m-11m). Call before opening the Kinect.
-    /// \param minMeters Min distance in meters defaults to 0.5m
-    /// \param maxMeters Max distance in meters defaults to 8.0m
-    static void setMinMaxDistance(float minMeters, float maxMeters);
-
-    /// \brief Set the configuration for the Kinect before intialization
-    /// \param config Configuration settings including range and edge and median processing
-    static void setFreenectConfiguration(libfreenect2::Freenect2Device::Config config);
 
     /// \brief Open the device with the given serial number.
     /// \param serial The serial number to open.
     /// \returns true if connected successfully.
-    bool open(const std::string& serial, ofProtonect::PacketPipelineType atype = ofProtonect::PacketPipelineType::DEFAULT );
+    bool open(const std::string& serial, Settings asettings = Settings() );
 
     /// \brief Open the device with the given serial number.
     /// \param deviceId The device id to open.
     /// \returns true if connected successfully.
-    bool open(int deviceId = 0, ofProtonect::PacketPipelineType atype = ofProtonect::PacketPipelineType::DEFAULT);
+    bool open(int deviceId = 0, Settings asettings = Settings() );
 
     /// \brief Update the Kinect internals.
     void update();
@@ -78,13 +87,24 @@ public:
     const ofPixels& getIRPixels() const;
 
     /// \returns the distance image. Each pixels is the distance in millimeters.
-    const ofFloatImage& getDistancePixels() const;
+    //const ofFloatImage& getDistancePixels() const;
     
     /// \brief Get the calulated distance for point x, y in the getRegisteredPixels image.
     float getDistanceAt(std::size_t x, std::size_t y) const;
     
     /// \brief Get the world X, Y, Z coordinates in millimeters for x, y in getRegisteredPixels image.
     glm::vec3 getWorldCoordinateAt(std::size_t x, std::size_t y) const;
+
+	/// \brief Get the minimum distance the kinect is tracking in millimeters
+	int getMinDistance() const;
+
+	/// \brief Get the maximum distance the kinect is tracking in millimeters
+	int getMaxDistance() const;
+
+	bool isDepthEnabled() const;
+	bool isIREnabled() const;
+	bool isRGBEnabled() const;
+	bool isRGBRegistrationEnabled() const;
     
     ofParameterGroup params;
     ofParameter<float> minDistance;
@@ -119,6 +139,8 @@ protected:
     ofFloatPixels rawIRPixelsFront;
     ofFloatPixels distancePixelsFront;
     ofFloatPixels distancePixelsBack;
+
+	Settings mSettings = Settings();
 
     int lastFrameNo = -1;
 };
