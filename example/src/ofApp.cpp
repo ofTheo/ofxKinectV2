@@ -32,6 +32,8 @@ void ofApp::setup()
 	ksettings.enableIR = true;
 	ksettings.enableDepth = true;
 	ksettings.enableRGBRegistration = true;
+	ksettings.config.MinDepth = 0.5;
+	ksettings.config.MaxDepth = 8.0;
     // Note you don't have to use ofxKinectV2 as a shared pointer, but if you
     // want to have it in a vector ( ie: for multuple ) it needs to be.
     for(int d = 0; d < kinects.size(); d++) {
