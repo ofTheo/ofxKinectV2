@@ -16,7 +16,7 @@ New:
 - Supports `linuxarmv7l`, see detailed installation instructions [here](https://gist.github.com/madelinegannon/237733e6c114f156b31366f47c1f3d32).
 
 Known Issues:
-- There is a bug with the OpenCLFrame destructor which casues a crash if the listener is deleted in ofProtonect::closeKinect. More info here: https://github.com/OpenKinect/libfreenect2/issues/867 
+- There is a bug with the OpenCLFrame destructor which casues a crash if the listener is deleted in ofProtonect::closeKinect. So we are not deleting the listener currently. This might cause a very small memory leak if you are opening and closing the Kinect many times. More info here: https://github.com/OpenKinect/libfreenect2/issues/867 
 
 Notes:
 - Requires a USB 3 port on machine. 
