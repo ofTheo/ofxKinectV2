@@ -70,7 +70,7 @@ std::size_t ofxKinectV2::getNumDevices() const
 }
 
 
-bool ofxKinectV2::open(int deviceId)
+bool ofxKinectV2::open(int deviceId, ofProtonect::PacketPipelineType atype )
 {
     std::vector<KinectDeviceInfo> devices = getDeviceList();
     
@@ -88,11 +88,11 @@ bool ofxKinectV2::open(int deviceId)
 
     string serial = devices[deviceId].serial;
     
-    return open(serial);
+    return open(serial, atype);
 }
 
 
-bool ofxKinectV2::open(const std::string& serial)
+bool ofxKinectV2::open(const std::string& serial, ofProtonect::PacketPipelineType atype )
 {
     close(); 
 
@@ -102,7 +102,13 @@ bool ofxKinectV2::open(const std::string& serial)
     bNewBuffer = false;
     bOpened    = false;
     
-    int retVal = protonect.open(serial);
+    ofProtonect::PacketPipelineType ptype = atype;
+    if( ptype == ofProtonect::PacketPipelineType::DEFAULT ) {
+        // lets force some openCL since openGL is no good on OSX //
+        ptype = ofProtonect::PacketPipelineType::OPENCL;
+    }
+    
+    int retVal = protonect.open(serial,ptype);
     
     if (retVal != 0)
     {

@@ -39,4 +39,4 @@
 #  endif
 #endif
 
-#endif
+#endif /* LIBFREENECT2_EXPORT_H */

@@ -8,7 +8,6 @@
 
 #pragma once
 
-
 #include "ofProtonect.h"
 #include "ofMain.h"
 
@@ -42,12 +41,12 @@ public:
     /// \brief Open the device with the given serial number.
     /// \param serial The serial number to open.
     /// \returns true if connected successfully.
-    bool open(const std::string& serial);
+    bool open(const std::string& serial, ofProtonect::PacketPipelineType atype = ofProtonect::PacketPipelineType::DEFAULT );
 
     /// \brief Open the device with the given serial number.
     /// \param deviceId The device id to open.
     /// \returns true if connected successfully.
-    bool open(int deviceId = 0);
+    bool open(int deviceId = 0, ofProtonect::PacketPipelineType atype = ofProtonect::PacketPipelineType::DEFAULT);
 
     /// \brief Update the Kinect internals.
     void update();
