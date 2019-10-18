@@ -15,18 +15,21 @@ New:
 - Supports `linux64`, see detailed installation instructions [here](https://gist.github.com/madelinegannon/10f62caba7184b90ea43a734768e5147).
 - Supports `linuxarmv7l`, see detailed installation instructions [here](https://gist.github.com/madelinegannon/237733e6c114f156b31366f47c1f3d32).
 
+Known Issues:
+- There is a bug with the OpenCLFrame destructor which casues a crash if the listener is deleted in ofProtonect::closeKinect. More info here: https://github.com/OpenKinect/libfreenect2/issues/867 
 
 Notes:
-- Kinect needs to have flashed firmware ( this currently needs to be done on Windows 10 ) 
 - Requires a USB 3 port on machine. 
 - For OS X if you have issues connecting to the device, check in the System Profiler -> USB.  If the Nui Sensor is not listed under SuperSpeed, unplug the power to the device and replug it in, without disconnecting the USB cable. 
-- Only tested on OS X and Windows10 though Nix should be possible too with patched libusb ( see: https://github.com/OpenKinect/libfreenect2/blob/master/depends/README.depends.txt ) 
+- Only tested on OS X / Windows10 / Nix 
 - If you have the ofxKinect ( v1 ) addon in your project remove the ofxKinect libusb lib and use the one that comes with this repo instead. 
 - //On OS X if you are not using the example project. Make sure to add OpenCL.framework and VideoToolbox.framework to the Link Binary With Library Build Phase and also change the line in Project.xcconfig to OTHER_LDFLAGS = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS) -framework OpenCL -framework VideoToolbox
 
 ### Windows 10 USB Setup.
-Use zadig to install libusbK drivers onto the Kinect V2 device:
-Install the libusbK backend driver for libusb. Please follow the steps exactly:
+- Use zadig to install libusbK drivers onto the Kinect V2 device
+- Install the libusbK backend driver for libusb. 
+
+Please follow the steps exactly:
 
     1. Download Zadig from http://zadig.akeo.ie/.
     2. Run Zadig and in options, check "List All Devices" and uncheck "Ignore Hubs or Composite Parents"
