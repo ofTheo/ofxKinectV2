@@ -40,122 +40,96 @@
 #include <libfreenect2/packet_pipeline.h>
 #include <libfreenect2/logger.h>
 
+int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipelineType, libfreenect2::Freenect2Device::Config aConfig) {
 
-libfreenect2::Freenect2Device::Config ofProtonect::mConfig;
-bool ofProtonect::bConfigSet = false;
-
-void ofProtonect::setMinMaxDistance(float minMeters, float maxMeters){
-    libfreenect2::Freenect2Device::Config tConfig;
-    tConfig.MinDepth = minMeters;
-    tConfig.MaxDepth = maxMeters;
-    tConfig.EnableBilateralFilter = true; //these are good defaults - use setConfig if you care to chang
-    tConfig.EnableEdgeAwareFilter = true; //these are good defaults - use setConfig if you care to chang
-    
-    setConfiguration(tConfig);
-}
-
-void ofProtonect::setConfiguration(libfreenect2::Freenect2Device::Config config){
-    mConfig = config;
-    bConfigSet = true; 
-}
-
-ofProtonect::ofProtonect()
-{
-    if (ofGetLogLevel() == OF_LOG_VERBOSE)
-    {
+    if (ofGetLogLevel() == OF_LOG_VERBOSE){
         libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Debug));
     }
-    else
-    {
+    else{
         libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Warning));
     }
-}
 
-int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipelineType)
-{
-    switch (packetPipelineType)
-    {
-        case PacketPipelineType::CPU:
-            pipeline = new libfreenect2::CpuPacketPipeline();
-            break;
-        case PacketPipelineType::OPENGL:
-            pipeline = new libfreenect2::OpenGLPacketPipeline();
-            break;
-        case PacketPipelineType::OPENCL:
-            pipeline = new libfreenect2::OpenCLPacketPipeline();
-            break;
-        case PacketPipelineType::OPENCLKDE:
-            pipeline = new libfreenect2::OpenCLKdePacketPipeline();
-            break;
+	if (!enableRGB && !enableDepth && !enableIR) {
+		ofLogError("ofProtonect::openKinect") << " neither color, depth or IR is enabled!";
+		return -1;
+	}
+    
+    //this is deleted by openDevice
+    libfreenect2::PacketPipeline* pipeline = nullptr;
+
+	switch (packetPipelineType) {
+	case PacketPipelineType::CPU:
+		pipeline = new libfreenect2::CpuPacketPipeline();
+		break;
+	case PacketPipelineType::OPENGL:
+		pipeline = new libfreenect2::OpenGLPacketPipeline();
+		break;
+	case PacketPipelineType::OPENCL:
+		pipeline = new libfreenect2::OpenCLPacketPipeline();
+		break;
+	case PacketPipelineType::OPENCLKDE:
+		pipeline = new libfreenect2::OpenCLKdePacketPipeline();
+		break;
 #if defined(LIBFREENECT2_WITH_CUDA_SUPPORT)
-        case PacketPipelineType::CUDA:
-            pipeline = new libfreenect2::CudaPacketPipeline(deviceId);
-            break;
-        case PacketPipelineType::CUDAKDE:
-            pipeline = new libfreenect2::CudaKdePacketPipeline(deviceId);
-            break;
+	case PacketPipelineType::CUDA:
+		pipeline = new libfreenect2::CudaPacketPipeline(deviceId);
+		break;
+	case PacketPipelineType::CUDAKDE:
+		pipeline = new libfreenect2::CudaKdePacketPipeline(deviceId);
+		break;
 #endif
-        case PacketPipelineType::DEFAULT:
-            break;
-    }
+	case PacketPipelineType::DEFAULT:
+		break;
+	}
 
-    if (pipeline)
-    {
-        dev = freenect2.openDevice(serial, pipeline);
-    }
-    else
-    {
-        dev = freenect2.openDevice(serial);
-    }
+	if (pipeline) {
+		dev = freenect2.openDevice(serial, pipeline);
+	} else {
+		dev = freenect2.openDevice(serial);
+	}
 
-    if (!dev)
-    {
-        ofLogError("ofProtonect::openKinect")  << "failure opening device with serial " << serial;
-        return -1;
-    }
+	if (!dev) {
+		ofLogError("ofProtonect::openKinect") << "failure opening device with serial " << serial;
+		return -1;
+	}
 
-    int types = 0;
-    
-    if (enableRGB)
-        types |= libfreenect2::Frame::Color;
-    if (enableDepth)
-        types |= libfreenect2::Frame::Ir | libfreenect2::Frame::Depth;
-    
-    listener = new libfreenect2::SyncMultiFrameListener(types);
-    
-    dev->setColorFrameListener(listener);
-    dev->setIrAndDepthFrameListener(listener);
-    
-    if( !bConfigSet ){
-        setMinMaxDistance(0.5, 8.0);
-    }
-    dev->setConfiguration(mConfig);
-    
-    /// [start]
-    if (enableRGB && enableDepth)
-    {
-        if (!dev->start())
-        {
-            ofLogError("ofProtonect::openKinect")  << "Error starting default stream for: " << serial;
-            return -1;
-        }
-    }
-    else
-    {
-        if (!dev->startStreams(enableRGB, enableDepth))
-        {
-            ofLogError("ofProtonect::openKinect")  << "Error starting selected streams for: " << serial;
-            return -1;
-        }
-    }
+	int types = 0;
 
-    ofLogVerbose("ofProtonect::openKinect") << "device serial: " << dev->getSerialNumber();
-    ofLogVerbose("ofProtonect::openKinect") << "device firmware: " << dev->getFirmwareVersion();
+	if (enableRGB)
+		types |= libfreenect2::Frame::Color;
+	if (enableDepth || enableIR)
+		types |= libfreenect2::Frame::Ir | libfreenect2::Frame::Depth;
 
-    registration = new libfreenect2::Registration(dev->getIrCameraParams(),
-                                                  dev->getColorCameraParams());
-    undistorted = new libfreenect2::Frame(512, 424, 4);
-    registered = new libfreenect2::Frame(512, 424, 4);
+	listener = new libfreenect2::SyncMultiFrameListener(types);
+
+	if (enableRGB) dev->setColorFrameListener(listener);
+	if (enableDepth || enableIR) dev->setIrAndDepthFrameListener(listener);
+
+	dev->setConfiguration(aConfig);
+
+	/// [start]
+	if (enableRGB && (enableDepth || enableIR) ) {
+		if (!dev->start()) {
+			ofLogError("ofProtonect::openKinect") << "Error starting default stream for: " << serial;
+			return -1;
+		}
+	} else {
+		if (!dev->startStreams(enableRGB, (enableDepth || enableIR) )) {
+			ofLogError("ofProtonect::openKinect") << "Error starting selected streams for: " << serial;
+			return -1;
+		}
+	}
+
+	ofLogVerbose("ofProtonect::openKinect") << "device serial: " << dev->getSerialNumber();
+	ofLogVerbose("ofProtonect::openKinect") << "device firmware: " << dev->getFirmwareVersion();
+
+	if (enableRGBRegistration && enableRGB && (enableDepth || enableIR) ) {
+		registration = new libfreenect2::Registration(dev->getIrCameraParams(),
+			dev->getColorCameraParams());
+
+		undistorted = new libfreenect2::Frame(512, 424, 4);
+		registered = new libfreenect2::Frame(512, 424, 4);
+	}
     
     bOpened = true;
     
@@ -176,11 +150,20 @@ void ofProtonect::updateKinect(ofPixels& rgbPixels,
             return;
         }
 
-        libfreenect2::Frame* rgb = frames[libfreenect2::Frame::Color];
-        libfreenect2::Frame* ir = frames[libfreenect2::Frame::Ir];
-        libfreenect2::Frame* depth = frames[libfreenect2::Frame::Depth];
+		libfreenect2::Frame* rgb;// = frames[libfreenect2::Frame::Color];
+		libfreenect2::Frame* ir;// = frames[libfreenect2::Frame::Ir];
+		libfreenect2::Frame* depth;// = frames[libfreenect2::Frame::Depth];
+		if (enableRGB) {
+			rgb = frames[libfreenect2::Frame::Color];
+		}
+		if (enableDepth) {
+			depth = frames[libfreenect2::Frame::Depth];
+		}
+		if (enableIR) {
+			ir = frames[libfreenect2::Frame::Ir];
+		}
 
-        if (enableRGB && enableDepth)
+        if (enableRGB && enableDepth && enableRGBRegistration)
         {
             registration->apply(rgb,
                                 depth,
@@ -188,21 +171,26 @@ void ofProtonect::updateKinect(ofPixels& rgbPixels,
                                 registered);
         }
 
-        ofPixelFormat rgbFormat;
-        if (rgb->format == libfreenect2::Frame::BGRX)
-        {
-            rgbFormat = OF_PIXELS_BGRA;
-        }
-        else
-        {
-            rgbFormat = OF_PIXELS_RGBA;
-        }
-        
-        rgbPixels.setFromPixels(rgb->data, rgb->width, rgb->height, rgbFormat);
-        rgbRegisteredPixels.setFromPixels(registered->data, registered->width, registered->height, rgbFormat);
+		if (enableRGB) {
+			ofPixelFormat rgbFormat;
+			if (rgb->format == libfreenect2::Frame::BGRX) {
+				rgbFormat = OF_PIXELS_BGRA;
+			} else {
+				rgbFormat = OF_PIXELS_RGBA;
+			}
 
-        depthPixels.setFromPixels(reinterpret_cast<float*>(depth->data), ir->width, ir->height, 1);
-        irPixels.setFromPixels(reinterpret_cast<float*>(ir->data), ir->width, ir->height, 1);
+			rgbPixels.setFromPixels(rgb->data, rgb->width, rgb->height, rgbFormat);
+			if (enableDepth && enableRGBRegistration) {
+				rgbRegisteredPixels.setFromPixels(registered->data, registered->width, registered->height, rgbFormat);
+			}
+		}
+
+		if (enableDepth) {
+			depthPixels.setFromPixels(reinterpret_cast<float*>(depth->data), depth->width, depth->height, 1);
+		}
+		if (enableIR) {
+			irPixels.setFromPixels(reinterpret_cast<float*>(ir->data), ir->width, ir->height, 1);
+		}
 
         listener->release(frames);
     }
@@ -213,19 +201,33 @@ int ofProtonect::closeKinect()
   if (bOpened)
   {
       listener->release(frames);
-
+      
+      
       // TODO: restarting ir stream doesn't work!
       // TODO: bad things will happen, if frame listeners are freed before dev->stop() :(
       dev->stop();
       dev->close();
-
       delete dev;
-      delete pipeline;
-      delete listener;
-      delete undistorted;
-      delete registered;
-      delete registration;
-      //delete bigFrame;
+
+      if( listener ) {
+        //TODO: this is a bug with libfreenect / OpenCL implementation
+        //if you uncomment this it will crash on exit. 
+//          delete listener;
+          listener = nullptr;
+      }
+      
+	  if (undistorted != nullptr) {
+		  delete undistorted;
+		  undistorted = nullptr;
+	  }
+	  if (registered != nullptr) {
+		  delete registered;
+		  registered = nullptr;
+	  }
+	  if (registration != nullptr) {
+		  delete registration;
+		  registration = nullptr;
+	  }
       bOpened = false;
   }
 

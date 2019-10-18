@@ -9,15 +9,15 @@
 #include "ofxKinectV2.h"
 
 //static
-void ofxKinectV2::setMinMaxDistance(float minMeters, float maxMeters)
-{
-    ofProtonect::setMinMaxDistance(minMeters, maxMeters);
-}
-
-void ofxKinectV2::setFreenectConfiguration(libfreenect2::Freenect2Device::Config config)
-{
-    ofProtonect::setConfiguration(config);
-}
+//void ofxKinectV2::setMinMaxDistance(float minMeters, float maxMeters)
+//{
+//    ofProtonect::setMinMaxDistance(minMeters, maxMeters);
+//}
+//
+//void ofxKinectV2::setFreenectConfiguration(libfreenect2::Freenect2Device::Config config)
+//{
+//    ofProtonect::setConfiguration(config);
+//}
 
 //non-static
 ofxKinectV2::ofxKinectV2()
@@ -70,7 +70,7 @@ std::size_t ofxKinectV2::getNumDevices() const
 }
 
 
-bool ofxKinectV2::open(int deviceId)
+bool ofxKinectV2::open(int deviceId, ofxKinectV2::Settings asettings)
 {
     std::vector<KinectDeviceInfo> devices = getDeviceList();
     
@@ -88,11 +88,11 @@ bool ofxKinectV2::open(int deviceId)
 
     string serial = devices[deviceId].serial;
     
-    return open(serial);
+    return open(serial, asettings);
 }
 
 
-bool ofxKinectV2::open(const std::string& serial)
+bool ofxKinectV2::open(const std::string& serial, ofxKinectV2::Settings asettings)
 {
     close(); 
 
@@ -101,8 +101,14 @@ bool ofxKinectV2::open(const std::string& serial)
     bNewFrame  = false;
     bNewBuffer = false;
     bOpened    = false;
+
+	mSettings = asettings;
     
-    int retVal = protonect.open(serial);
+	protonect.setRGBEnabled(asettings.enableRGB);
+	protonect.setDepthEnabled(asettings.enableDepth);
+	protonect.setIREnabled(asettings.enableIR);
+	protonect.setEnableRGBRegistration(asettings.enableRGBRegistration);
+    int retVal = protonect.open(serial,asettings.pipeline,asettings.config);
     
     if (retVal != 0)
     {
@@ -275,6 +281,36 @@ glm::vec3 ofxKinectV2::getWorldCoordinateAt(std::size_t x, std::size_t y) const
     else ofLogWarning("ofxKinectV2::getWorldCoordinateAt") << "Kinect is not initialized, returning 0, 0, 0.";
     
     return position;
+}
+
+// ------------------------------------------
+int ofxKinectV2::getMinDistance() const {
+	return (mSettings.config.MinDepth * 1000);
+}
+
+// ------------------------------------------
+int ofxKinectV2::getMaxDistance() const {
+	return (mSettings.config.MaxDepth * 1000);
+}
+
+// ------------------------------------------
+bool ofxKinectV2::isDepthEnabled() const {
+	return mSettings.enableDepth;
+}
+
+// ------------------------------------------
+bool ofxKinectV2::isIREnabled() const {
+	return mSettings.enableIR;
+}
+
+// ------------------------------------------
+bool ofxKinectV2::isRGBEnabled() const {
+	return mSettings.enableRGB;
+}
+
+// ------------------------------------------
+bool ofxKinectV2::isRGBRegistrationEnabled() const {
+	return mSettings.enableRGBRegistration;
 }
 
 
