@@ -24,7 +24,7 @@ Notes:
 - If you have the ofxKinect ( v1 ) addon in your project remove the ofxKinect libusb lib and use the one that comes with this repo instead. 
 - //On OS X if you are not using the example project. Make sure to add OpenCL.framework and VideoToolbox.framework to the Link Binary With Library Build Phase and also change the line in Project.xcconfig to OTHER_LDFLAGS = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS) -framework OpenCL -framework VideoToolbox
 
-###Windows 10 USB Setup.
+### Windows 10 USB Setup.
 Use zadig to install libusbK drivers onto the Kinect V2 device:
 Install the libusbK backend driver for libusb. Please follow the steps exactly:
 
