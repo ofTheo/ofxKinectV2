@@ -40,25 +40,22 @@
 #include <libfreenect2/packet_pipeline.h>
 #include <libfreenect2/logger.h>
 
+int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipelineType, libfreenect2::Freenect2Device::Config aConfig) {
 
-ofProtonect::ofProtonect()
-{
-    if (ofGetLogLevel() == OF_LOG_VERBOSE)
-    {
+    if (ofGetLogLevel() == OF_LOG_VERBOSE){
         libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Debug));
     }
-    else
-    {
+    else{
         libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Warning));
     }
-}
-
-int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipelineType, libfreenect2::Freenect2Device::Config aConfig) {
 
 	if (!enableRGB && !enableDepth && !enableIR) {
 		ofLogError("ofProtonect::openKinect") << " neither color, depth or IR is enabled!";
 		return -1;
 	}
+    
+    //this is deleted by openDevice
+    libfreenect2::PacketPipeline* pipeline = nullptr;
 
 	switch (packetPipelineType) {
 	case PacketPipelineType::CPU:
@@ -210,13 +207,11 @@ int ofProtonect::closeKinect()
       // TODO: bad things will happen, if frame listeners are freed before dev->stop() :(
       dev->stop();
       dev->close();
-
       delete dev;
-      if (pipeline) {
-//          delete pipeline;
-          pipeline = nullptr;
-      }
+
       if( listener ) {
+        //TODO: this is a bug with libfreenect / OpenCL implementation
+        //if you uncomment this it will crash on exit. 
 //          delete listener;
           listener = nullptr;
       }
@@ -233,7 +228,6 @@ int ofProtonect::closeKinect()
 		  delete registration;
 		  registration = nullptr;
 	  }
-      //delete bigFrame;
       bOpened = false;
   }
 

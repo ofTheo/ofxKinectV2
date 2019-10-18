@@ -32,11 +32,6 @@ public:
 #endif
     };
 
-    ofProtonect();
-    
-    //static void setMinMaxDistance(float minMeters, float maxMeters);
-    //static void setConfiguration(libfreenect2::Freenect2Device::Config config);
-
     int open(const std::string& serial,
              PacketPipelineType packetPipelineType, libfreenect2::Freenect2Device::Config aConfig );
     
@@ -78,18 +73,12 @@ protected:
     libfreenect2::Freenect2 freenect2;
 
     libfreenect2::Freenect2Device* dev = nullptr;
-    libfreenect2::PacketPipeline* pipeline = nullptr;
-
     libfreenect2::FrameMap frames;
 
     libfreenect2::Registration* registration = nullptr;
     libfreenect2::SyncMultiFrameListener* listener = nullptr;
     libfreenect2::Frame* undistorted = nullptr;
     libfreenect2::Frame* registered = nullptr;
-    libfreenect2::Frame* bigFrame = nullptr;
-    
-    //static libfreenect2::Freenect2Device::Config mConfig;
-    //static bool bConfigSet; 
 
     friend class ofxKinectV2;
 };
