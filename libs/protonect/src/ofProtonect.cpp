@@ -202,19 +202,15 @@ int ofProtonect::closeKinect()
   {
       listener->release(frames);
       
-      
-      // TODO: restarting ir stream doesn't work!
-      // TODO: bad things will happen, if frame listeners are freed before dev->stop() :(
       dev->stop();
       dev->close();
-      delete dev;
 
-      if( listener ) {
-        //TODO: this is a bug with libfreenect / OpenCL implementation
-        //if you uncomment this it will crash on exit. 
-//          delete listener;
-          listener = nullptr;
-      }
+      delete listener;
+      listener = nullptr;
+      
+      //Have to delete dev after listener otherwise you will get a crash.
+      delete dev;
+      dev = nullptr;
       
 	  if (undistorted != nullptr) {
 		  delete undistorted;
