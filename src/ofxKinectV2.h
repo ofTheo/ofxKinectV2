@@ -35,6 +35,7 @@ public:
 		bool enableRGB = true;
 		bool enableIR = true;
 		bool enableRGBRegistration = true;
+		bool enableDepthRegistration = true;
 		libfreenect2::Freenect2Device::Config config;
 		ofProtonect::PacketPipelineType pipeline = ofProtonect::PacketPipelineType::OPENCL;
 	};

@@ -129,6 +129,10 @@ int ofProtonect::open(const std::string& serial, PacketPipelineType packetPipeli
 
 		undistorted = new libfreenect2::Frame(512, 424, 4);
 		registered = new libfreenect2::Frame(512, 424, 4);
+	} else if (enableDepthRegistration && enableDepth) {
+		registration = new libfreenect2::Registration(dev->getIrCameraParams(),
+			dev->getColorCameraParams());
+		undistorted = new libfreenect2::Frame(512, 424, 4);
 	}
     
     bOpened = true;
@@ -169,7 +173,9 @@ void ofProtonect::updateKinect(ofPixels& rgbPixels,
                                 depth,
                                 undistorted,
                                 registered);
-        }
+		} else if (enableDepth && enableDepthRegistration) {
+			registration->undistortDepth(depth, undistorted);
+		}
 
 		if (enableRGB) {
 			ofPixelFormat rgbFormat;

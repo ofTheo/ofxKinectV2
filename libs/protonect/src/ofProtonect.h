@@ -60,12 +60,17 @@ public:
 	void setEnableRGBRegistration(bool ab) {
 		enableRGBRegistration = ab;
 	}
+	void setEnableDepthRegistration(bool ab) {
+		enableDepthRegistration = ab;
+	}
   
 protected:
     bool enableRGB = true;
     bool enableDepth = true;
 	bool enableIR = true;
 	bool enableRGBRegistration = true;
+	// if enableRGBRegistration is true, then it will update the depth registration //
+	bool enableDepthRegistration = true; 
     int deviceId = -1;
 
     bool bOpened = false;
