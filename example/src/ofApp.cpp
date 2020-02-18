@@ -34,6 +34,16 @@ void ofApp::setup()
 	ksettings.enableRGBRegistration = true;
 	ksettings.config.MinDepth = 0.5;
 	ksettings.config.MaxDepth = 8.0;
+    
+    //****************************************//
+    // example settings for just getting the depth stream //
+//    ksettings.enableRGB = false;
+//    ksettings.enableRGBRegistration = false;
+//    ksettings.enableIR = false;
+//    // use enableDepthRegistration if you would like to use getWorldCoordinateAt
+//    ksettings.enableDepthRegistration = true;
+    //****************************************//
+    
     // Note you don't have to use ofxKinectV2 as a shared pointer, but if you
     // want to have it in a vector ( ie: for multuple ) it needs to be.
     for(int d = 0; d < kinects.size(); d++) {
@@ -79,7 +89,7 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-    if (!showPointCloud)
+    if (!showPointCloud && currentKinect < texRGB.size())
     {
         drawTextureAtRowAndColumn("RGB Pixels",
                                   texRGB[currentKinect],
@@ -105,6 +115,10 @@ void ofApp::draw()
         pointCloud.draw();
         ofPopMatrix();
         cam.end();
+    }
+    
+    if( kinects.size() < 1 ) {
+        ofDrawBitmapStringHighlight( "No Kinects Detected", 40, 40 );
     }
         
     panel.draw();
