@@ -109,12 +109,21 @@ void ofApp::draw()
     }
     else
     {
+        
+        ofEnableDepthTest();
         cam.begin();
         ofPushMatrix();
+        glPointSize(3); // choose dot size for our point cloud rendering
+        
         ofScale(100, -100, -100);
+        pointCloud.setMode(OF_PRIMITIVE_POINTS);
+        //pointCloud.drawVertices();
+    
         pointCloud.draw();
         ofPopMatrix();
         cam.end();
+        ofDisableDepthTest();
+        
     }
     
     if( kinects.size() < 1 ) {
