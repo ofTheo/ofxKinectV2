@@ -27,16 +27,47 @@
 #ifndef LIBFREENECT2_CONFIG_H
 #define LIBFREENECT2_CONFIG_H
 
+#define LIBFREENECT2_VERSION "0.2.0"
+#define LIBFREENECT2_API_VERSION ((0 << 16) | 2)
+
 #ifdef _MSC_VER
-    #define LIBFREENECT2_PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
+#define LIBFREENECT2_PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
 #else
-    #define LIBFREENECT2_PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#define LIBFREENECT2_PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
 #endif
 
+#include <libfreenect2/export.h>
+#define LIBFREENECT2_API LIBFREENECT2_EXPORT
+
+/* #undef LIBFREENECT2_WITH_OPENGL_SUPPORT */
 #define LIBFREENECT2_WITH_OPENGL_SUPPORT
+
 #define LIBFREENECT2_WITH_OPENCL_SUPPORT
+/* #undef LIBFREENECT2_OPENCL_ICD_LOADER_IS_OLD */
+
+/* #undef LIBFREENECT2_WITH_CUDA_SUPPORT */
+
+#ifndef _WIN32
+#define LIBFREENECT2_WITH_VT_SUPPORT
+#endif
+
+#ifdef _WIN32
+#define LIBFREENECT2_WITH_TURBOJPEG_SUPPORT
+#endif
+
+/* #undef LIBFREENECT2_WITH_VAAPI_SUPPORT */
+
+/* #undef LIBFREENECT2_WITH_TURBOJPEG_SUPPORT */
+
+/* #undef LIBFREENECT2_WITH_TEGRAJPEG_SUPPORT */
+#define LIBFREENECT2_TEGRAJPEG_LIBRARY "TegraJPEG_LIBRARIES-NOTFOUND"
 
 #define LIBFREENECT2_THREADING_STDLIB
+
+/* #undef LIBFREENECT2_THREADING_TINYTHREAD */
+
 #define LIBFREENECT2_WITH_CXX11_SUPPORT
+
+/* #undef LIBFREENECT2_WITH_PROFILING */
 
 #endif // LIBFREENECT2_CONFIG_H

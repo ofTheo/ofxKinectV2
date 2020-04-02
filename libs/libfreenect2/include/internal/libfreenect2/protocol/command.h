@@ -28,10 +28,13 @@
 #define COMMAND_H_
 
 #include <stdint.h>
+#include <cstring>
+#include "libfreenect2/protocol/response.h"
+#include "libfreenect2/led_settings.h"
 
 #define KCMD_READ_FIRMWARE_VERSIONS 0x02
 #define KCMD_INIT_STREAMS 0x09
-#define KCMD_READ_DATA_0x14 0x14
+#define KCMD_READ_HARDWARE_INFO 0x14
 #define KCMD_READ_STATUS 0x16
 #define KCMD_READ_DATA_PAGE 0x22
 #define KCMD_READ_DATA_0x26 0x26
@@ -39,11 +42,15 @@
 #define KCMD_SET_STREAMING 0x2B
 #define KCMD_SET_MODE 0x4B
 
+#define KCMD_RGB_SETTING 0x3E  // Command value for color camera settings
+#define KCMD_LED_SETTING  0x4B
+
 #define KCMD_0x46 0x46
 #define KCMD_0x47 0x47
 
 // observed in sensor stop/shutdown sequence
-#define KCMD_0x0A 0x0A
+#define KCMD_STOP 0x0A
+#define KCMD_SHUTDOWN 0x00
 
 namespace libfreenect2
 {
@@ -84,12 +91,13 @@ struct CommandBase
 
   virtual uint32_t sequence() const = 0;
   virtual uint32_t maxResponseLength() const = 0;
+  virtual uint32_t minResponseLength() const = 0;
 
   virtual const uint8_t *data() const = 0;
   virtual uint32_t size() const = 0;
 };
 
-template<uint32_t CommandId, uint32_t MaxResponseLength, uint32_t NParam>
+template<uint32_t CommandId, uint32_t MaxResponseLength, uint32_t MinResponseLength, uint32_t NParam>
 class Command : public CommandBase
 {
 public:
@@ -98,6 +106,8 @@ public:
   static const uint32_t MagicNumber = 0x06022009;
   static const uint32_t Size = sizeof(Data);
 
+  uint32_t min_response_length;
+
   Command(uint32_t seq)
   {
     data_.magic = MagicNumber;
@@ -105,6 +115,7 @@ public:
     data_.max_response_length = MaxResponseLength;
     data_.command = CommandId;
     data_.reserved0 = 0;
+    min_response_length = MinResponseLength;
   }
 
   virtual ~Command()
@@ -119,6 +130,11 @@ public:
   virtual uint32_t maxResponseLength() const
   {
     return data_.max_response_length;
+  }
+
+  virtual uint32_t minResponseLength() const
+  {
+    return min_response_length;
   }
 
   virtual const uint8_t *data() const
@@ -136,26 +152,35 @@ protected:
 };
 
 template<uint32_t CommandId, uint32_t MaxResponseLength>
-struct CommandWith0Params : public Command<CommandId, MaxResponseLength, 0>
+struct CommandWith0Params : public Command<CommandId, MaxResponseLength, MaxResponseLength, 0>
 {
-  CommandWith0Params(uint32_t seq) : Command<CommandId, MaxResponseLength, 0>(seq)
+  CommandWith0Params(uint32_t seq) : Command<CommandId, MaxResponseLength, MaxResponseLength, 0>(seq)
   {
   }
 };
 
 template<uint32_t CommandId, uint32_t MaxResponseLength, uint32_t Param1>
-struct CommandWith1Param : public Command<CommandId, MaxResponseLength, 1>
+struct CommandWith1Param : public Command<CommandId, MaxResponseLength, MaxResponseLength, 1>
 {
-  CommandWith1Param(uint32_t seq) : Command<CommandId, MaxResponseLength, 1>(seq)
+  CommandWith1Param(uint32_t seq) : Command<CommandId, MaxResponseLength, MaxResponseLength, 1>(seq)
+  {
+    this->data_.parameters[0] = Param1;
+  }
+};
+
+template<uint32_t CommandId, uint32_t MaxResponseLength, uint32_t MinResponseLength, uint32_t Param1>
+struct CommandWith1ParamLarge : public Command<CommandId, MaxResponseLength, MinResponseLength, 1>
+{
+  CommandWith1ParamLarge(uint32_t seq) : Command<CommandId, MaxResponseLength, MinResponseLength, 1>(seq)
   {
     this->data_.parameters[0] = Param1;
   }
 };
 
 template<uint32_t CommandId, uint32_t MaxResponseLength, uint32_t Param1, uint32_t Param2 = 0, uint32_t Param3 = 0, uint32_t Param4 = 0>
-struct CommandWith4Params : public Command<CommandId, MaxResponseLength, 4>
+struct CommandWith4Params : public Command<CommandId, MaxResponseLength, MaxResponseLength, 4>
 {
-  CommandWith4Params(uint32_t seq) : Command<CommandId, MaxResponseLength, 4>(seq)
+  CommandWith4Params(uint32_t seq) : Command<CommandId, MaxResponseLength, MaxResponseLength, 4>(seq)
   {
     this->data_.parameters[0] = Param1;
     this->data_.parameters[1] = Param2;
@@ -166,14 +191,14 @@ struct CommandWith4Params : public Command<CommandId, MaxResponseLength, 4>
 
 typedef CommandWith0Params<0x02, 0x200> ReadFirmwareVersionsCommand;
 
-typedef CommandWith0Params<KCMD_READ_DATA_0x14, 0x5C> ReadData0x14Command;
+typedef CommandWith0Params<KCMD_READ_HARDWARE_INFO, 0x5C> ReadHardwareInfoCommand;
 
 typedef CommandWith0Params<KCMD_INIT_STREAMS, 0x00> InitStreamsCommand;
 
 typedef CommandWith1Param<KCMD_READ_DATA_PAGE, 0x80, 0x01> ReadSerialNumberCommand;
-typedef CommandWith1Param<KCMD_READ_DATA_PAGE, 0x1C0000, 0x02> ReadP0TablesCommand;
-typedef CommandWith1Param<KCMD_READ_DATA_PAGE, 0x1C0000, 0x03> ReadDepthCameraParametersCommand;
-typedef CommandWith1Param<KCMD_READ_DATA_PAGE, 0x1C0000, 0x04> ReadRgbCameraParametersCommand;
+typedef CommandWith1ParamLarge<KCMD_READ_DATA_PAGE, 0x1C0000, sizeof(P0TablesResponse), 0x02> ReadP0TablesCommand;
+typedef CommandWith1ParamLarge<KCMD_READ_DATA_PAGE, 0x1C0000, sizeof(DepthCameraParamsResponse), 0x03> ReadDepthCameraParametersCommand;
+typedef CommandWith1ParamLarge<KCMD_READ_DATA_PAGE, 0x1C0000, sizeof(RgbCameraParamsResponse), 0x04> ReadRgbCameraParametersCommand;
 
 typedef CommandWith1Param<KCMD_READ_STATUS, 0x04, 0x090000> ReadStatus0x090000Command;
 typedef CommandWith1Param<KCMD_READ_STATUS, 0x04, 0x100007> ReadStatus0x100007Command;
@@ -192,12 +217,56 @@ typedef CommandWith1Param<KCMD_SET_STREAMING, 0x00, 0x01> SetStreamEnabledComman
 typedef CommandWith4Params<KCMD_0x46, 0x00, 0x00, 0x00003840, 0x00000037, 0x00> Unknown0x46Command;
 typedef CommandWith0Params<KCMD_0x47, 0x10> Unknown0x47Command;
 
-typedef CommandWith0Params<KCMD_0x0A, 0x00> Unknown0x0ACommand;
+typedef CommandWith0Params<KCMD_STOP, 0x00> StopCommand;
+typedef CommandWith0Params<KCMD_SHUTDOWN, 0x00> ShutdownCommand;
 
 typedef CommandWith4Params<KCMD_SET_MODE, 0x00, 0x00> SetModeDisabledCommand;
 typedef CommandWith4Params<KCMD_SET_MODE, 0x00, 0x01> SetModeEnabledCommand;
 typedef CommandWith4Params<KCMD_SET_MODE, 0x00, 0x01, 0x00640064> SetModeEnabledWith0x00640064Command;
 typedef CommandWith4Params<KCMD_SET_MODE, 0x00, 0x01, 0x00500050> SetModeEnabledWith0x00500050Command;
+
+// The following information was found by using the library released by Microsoft under MIT license,
+// https://github.com/Microsoft/MixedRealityCompanionKit/tree/master/KinectIPD/NuiSensor
+// Command values come from headers, packet CommandId from stepping through assembly in NuiSensorLib.lib
+#define ColorSettingResponseSize sizeof(ColorSettingResponse)
+struct ColorSettingCommand : public Command<KCMD_RGB_SETTING, ColorSettingResponseSize, ColorSettingResponseSize, 4>
+{
+  ColorSettingCommand(ColorSettingCommandType cmd, uint32_t value = 0)
+    : Command<KCMD_RGB_SETTING, ColorSettingResponseSize, ColorSettingResponseSize, 4>(0)  // seq always zero
+  {
+    // Data parameters are elements of struct NUISENSOR_RGB_CHANGE_STREAM_SETTING
+    // which supports multiple settings for a single call.
+    this->data_.parameters[0] = 1;  // NumCommands = 1 for single command
+    this->data_.parameters[1] = 0;  // SequenceId = 0 for RGB commands
+    this->data_.parameters[2] = (uint32_t)cmd;  // Cmd with a value from NUISENSOR_RGB_COMMAND_*
+    this->data_.parameters[3] = value;  // Arg is int or float depending on Cmd, zero for GET_*
+  }
+
+  // Could overload ctor to ease usage for float-valued settings.
+  ColorSettingCommand(ColorSettingCommandType cmd, float value)
+    : Command<KCMD_RGB_SETTING, ColorSettingResponseSize, ColorSettingResponseSize, 4>(0)
+  {
+    this->data_.parameters[0] = 1;
+    this->data_.parameters[1] = 0;
+    this->data_.parameters[2] = (uint32_t)cmd;
+    uint32_t value2;
+    memcpy(&value2, &value, sizeof(value2));
+    this->data_.parameters[3] = value2;
+  }
+};
+
+
+#define LedSettingResponseSize  0
+struct LedSettingCommand : public libfreenect2::protocol::Command<KCMD_LED_SETTING, LedSettingResponseSize, LedSettingResponseSize, 4>
+{
+  LedSettingCommand(LedSettings led)
+    : Command<KCMD_LED_SETTING, LedSettingResponseSize, LedSettingResponseSize, 4>(0)  // seq always zero
+  {
+    memcpy(this->data_.parameters, &led, sizeof(led));
+  }
+};
+
+
 } /* namespace protocol */
 } /* namespace libfreenect2 */
 #endif /* COMMAND_H_ */
