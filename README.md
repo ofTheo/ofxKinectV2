@@ -2,7 +2,7 @@ ofxKinectV2
 ===========
 
 An addon for the new Kinect For Windows V2 sensor. 
-Based on the excellent work by the https://github.com/OpenKinect/libfreenect2 team ( @JoshBlake @floe and @christiankerl plus others ) 
+Based on the excellent work by the https://github.com/OpenKinect/libfreenect2 team ( `@JoshBlake` `@floe` and `@christiankerl` plus others ) 
 
 New: 
 - Adds support for > 8m if needed with ofxKinectV2::Settings 
