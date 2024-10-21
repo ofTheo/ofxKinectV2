@@ -51,6 +51,7 @@ void ofApp::setup()
         kinects[d]->open(deviceList[d].serial, ksettings);
         panel.add(kinects[d]->params);
     }
+    panel.add(pointSize);
 
     panel.loadFromFile("settings.xml");
 
@@ -73,6 +74,8 @@ void ofApp::update()
             if (showPointCloud)
             {
                 pointCloud.clear();
+                pointCloud.setMode(OF_PRIMITIVE_POINTS);
+                ofSetPointSize(pointSize.get());
                 for (std::size_t x = 0; x < texRGBRegistered[d].getWidth(); x++)
                 {
                     for (std::size_t y = 0; y < texRGBRegistered[d].getHeight(); y++)

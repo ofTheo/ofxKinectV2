@@ -24,6 +24,9 @@ public:
 
     std::vector<std::shared_ptr<ofxKinectV2>> kinects;
 
+    ofParameter<float> pointSize = {"Point Size", 1, 1, 10};
+    
+    
     std::vector<ofTexture> texRGB;
     std::vector<ofTexture> texRGBRegistered;
     std::vector<ofTexture> texIR;

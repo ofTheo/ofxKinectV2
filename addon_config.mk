@@ -5,6 +5,10 @@ meta:
 	ADDON_TAGS = "kinect" "kinectv2" "libfreenect" "libfreenect2"
 	ADDON_URL = https://github.com/ofTheo/ofxKinectV2
 
+
+common:
+	# derines that will be passed to the compiler when including this addon
+	ADDON_DEFINES = OF_ADDON_HAS_OFXKINECT_V2
 osx:
 	ADDON_FRAMEWORKS = OpenCL VideoToolbox
     ADDON_INCLUDES_EXCLUDE  = "libs/libturbojpeg"
